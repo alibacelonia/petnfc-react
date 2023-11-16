@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Other CSS styles */
+@import url("https://fonts.googleapis.com/css?family=Poppins:thin,extralight,light,regular,medium,semibold,bold,extrabold,black,italic&subset=latin,latin-ext");
+
+* {
+  font-family: 'Poppins';
+  font-weight: "Light";
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+body::-webkit-scrollbar {
+  width: 0px;
+}
+
+body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.3);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 0px solid slategrey;
+}
+
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 328px;
+  object-fit: cover;
+}
+
+.swiper-slide.swiper-slide {
+  background: transparent;
+}
+
+.swiper-slide-prev {
+  opacity: 0.2 !important;
+}
+
+.swiper-slide-next {
+  opacity: 0.2 !important;
+}
+
+.react-select-custom {
+  font-size: 12px !important; /* Set the desired font size here */
+}
