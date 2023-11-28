@@ -370,7 +370,7 @@ const RegisterPetPage = () => {
                         )}
                       />
                       <FormErrorMessage fontSize="xs">
-                        {errors.pet_type_id && errors.pet_type_id.message}
+                        {errors.state && errors.state.message}
                       </FormErrorMessage>
                     </FormControl>
                   </div>
@@ -403,7 +403,7 @@ const RegisterPetPage = () => {
                         )}
                       />
                       <FormErrorMessage fontSize="xs">
-                        {errors.gender && errors.gender.message}
+                        {errors.city && errors.city.message}
                       </FormErrorMessage>
                     </FormControl>
                   </div>

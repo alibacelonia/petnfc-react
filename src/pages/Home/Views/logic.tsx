@@ -11,6 +11,21 @@ import { PetInfo } from "../../../flux/pets/types";
 import { AxiosError } from "axios";
 import { useToast } from "@chakra-ui/react";
 import { UserInfo } from "../../../flux/user/types";
+import CryptoJS from "crypto-js";
+
+function decryptData(base64Key: any, encryptedData: any) {
+  const key = CryptoJS.enc.Base64.parse(base64Key);
+  const dataBytes = CryptoJS.enc.Base64.parse(encryptedData);
+  const iv = CryptoJS.lib.WordArray.create(dataBytes.words.slice(0, 4));
+  const ciphertext = CryptoJS.lib.WordArray.create(
+    dataBytes.words.slice(4)
+  );
+  const decryptedBytes = CryptoJS.AES.decrypt({ ciphertext } as CryptoJS.lib.CipherParams, key, { iv });
+  const decryptedText = CryptoJS.enc.Utf8.stringify(decryptedBytes);
+  return decryptedText;
+};
+
+
 
 export const useLogic = () => {
   const navigate = useNavigate();
@@ -26,6 +41,9 @@ export const useLogic = () => {
 
   const toast = useToast();
   const petStateHistory = petState.history;
+  const userStateHistory = userState.history;
+  
+  
 
   useEffect(() => {
     // Batching localStorage calls
@@ -70,6 +88,37 @@ export const useLogic = () => {
   }, [petState]);
 
   useEffect(() => {
+    
+    if(userStateHistory.length > 0) {
+      const type = userStateHistory[userStateHistory.length - 1].type;
+      if (type == "UPDATE_PET") {
+        const state1 = userStateHistory[userStateHistory.length - 1].payload?.targetUserInfo?.email
+        const state2 = userStateHistory[userStateHistory.length - 2].payload?.targetUserInfo?.email
+        if(state1 != state2){
+          // toast({
+          //   position: "top",
+          //   title: "Email Updated Successfully",
+          //   description: "Your account now reflects the updated email address.",
+          //   status: "success",
+          //   isClosable: true,
+          //   duration: 3000,
+          // });
+        }
+        else{
+          toast({
+            position: "top",
+            title: "User Profile Updated",
+            description: "Your profile has been successfully updated.",
+            status: "success",
+            isClosable: true,
+            duration: 3000,
+          });
+        }
+      }
+    }
+  }, [userState]);
+
+  useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
@@ -79,7 +128,12 @@ export const useLogic = () => {
           axiosPrivate.get("/user/details", { signal }),
           axiosPrivate.get("/pet/mypets", { signal }),
         ]);
-        userDispatch(fetchUserData(response1?.data));
+
+        const decryptedText = decryptData(response1?.data.key,  response1?.data.data);
+        const userObj = JSON.parse(decryptedText)
+        console.log(userObj)
+
+        userDispatch(fetchUserData(userObj));
         petDispatch(fetchPetData(response2?.data?.pets));
 
         const linkedText = localStorage.getItem("linkedID");
@@ -148,7 +202,7 @@ export const useLogic = () => {
           toast({
             position: "top",
             title: "Error Fetching Data",
-            // description: "Error fetching data",
+            description: "Error fetching data",
             status: "error",
             isClosable: true,
             duration: 3000,
@@ -159,10 +213,10 @@ export const useLogic = () => {
     };
 
     fetchData();
-
     return () => {
+      
       // cancel the request before component unmounts
-      abortController.abort();
+      // abortController.abort();
     };
   }, []);
 

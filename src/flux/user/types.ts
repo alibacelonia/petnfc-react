@@ -20,11 +20,16 @@ export type UserInfo = {
     role: string;
     created_at: string;
     updated_at: string;
+
+    otp: string;
+    otp_secret: string;
+    otp_created_at: string;
 }
 
 
 export type UserInfoContextState = {
     userInfo: UserInfo;
+    history: UserAction[];
 }
 
 export enum UserActionType {

@@ -9,6 +9,7 @@ export const reducer = (
             return action.payload?.targetUserInfo ? {
                 ...state,
                 userInfo: action.payload.targetUserInfo,
+                history: [...state.history, action],
             } : state
 
         case UserActionType.UPDATE_PET:
@@ -16,6 +17,7 @@ export const reducer = (
             return action.payload?.targetUserInfo ? {
                 ...state,
                 userInfo: action.payload.targetUserInfo,
+                history: [...state.history, action],
             } : state
 
         // Add a default case to handle other action types

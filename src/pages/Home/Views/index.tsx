@@ -13,6 +13,7 @@ import { useLogic } from "./logic";
 
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import ProfileEditPage from "./Profile/ProfileEdit";
 
 export function useIsVisible(ref: any) {
   const [isIntersecting, setIntersecting] = useState(false);
@@ -50,8 +51,10 @@ const HomePage = () => {
         return <PetEditPage />;
       case "profile":
         return <ProfilePage />;
-      case "feedback":
-        return <FeedbackPage />;
+      case "profile_edit":
+        return <ProfileEditPage />;
+      // case "feedback":
+      //   return <FeedbackPage />;
       case "settings":
         return <SettingsPage />;
       default:

@@ -10,7 +10,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   auth: {}, // Replace 'any' with the actual type of auth
   setAuth: () => {}, // Replace 'any' with the actual type of auth
-  persist: false,
+  persist: true,
   setPersist: () => {},
 });
 

@@ -26,7 +26,11 @@ export const UserInfoContext = React.createContext<UserContextType>({
             role: "user",
             created_at: "",
             updated_at: "",
-          }
+            otp: "",
+            otp_secret: "",
+            otp_created_at: "",
+          },
+        history: []
     },
     userDispatch: () => void 0,
 })
@@ -55,7 +59,11 @@ export const UserProvider = ({children} : {children?: React.ReactNode}) => {
             role: "user",
             created_at: "",
             updated_at: "",
-          }
+            otp: "",
+            otp_secret: "",
+            otp_created_at: "",
+          },
+        history: []
     })
 
     return(

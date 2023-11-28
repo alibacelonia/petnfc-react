@@ -989,6 +989,10 @@ const PetAddPage = () => {
     console.log(activeStep);
   }, [activeStep]);
 
+  const constraints: MediaTrackConstraints = {
+    facingMode: ''
+  }
+
   return (
     <>
       <div className="relative ml-0 md:ml-60 bg-yello-200 py-4 px-4 md:px-10 z-10 ">
@@ -1055,6 +1059,7 @@ const PetAddPage = () => {
             </div>
             <div className="w-full sm:w-4/6 md:w-3/6 lg:w-2/6 xl:1/6">
               <QrScanner
+              tracker={false}
                 onDecode={(result) => validate(result)}
                 onError={(error) => console.log(error?.message)}
               />

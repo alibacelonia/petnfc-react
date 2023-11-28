@@ -62,7 +62,7 @@ const SignIn = () => {
       } overflow-hidden`}
     >
       <div className="grid grid-cols-2">
-        <div className="bg-white col-span-full rounded-l-lg rounded-r-lg lg:col-span-1 lg:rounded-r-none px-4">
+        <div className="bg-white col-span-full rounded-l-lg rounded-r-lg lg:col-span-1 lg:rounded-r-none px-4 relative z-50">
           <div className="flex flex-col min-h-screen justify-center items-center">
             <div className="flex items-center justify-center w-full max-w-sm mb-4">
               <Image
@@ -163,7 +163,7 @@ const SignIn = () => {
           </div>
         </div>
         <div
-          className={`bg-gradient-to-r from-blue-400 to-blue-600 hidden lg:block rounded-r-lg relative`}
+          className={`bg-gradient-to-r from-blue-400 to-blue-600 hidden lg:block rounded-r-lg relative z-40`}
         >
           <div className="bg-blue-500 w-24 h-24 rounded-full absolute right-56 top-12"></div>
           <div className="bg-blue-500 w-4 h-4 rounded-full absolute right-56 top-12"></div>

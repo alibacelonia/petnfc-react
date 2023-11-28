@@ -21,6 +21,7 @@ import { Dispatch, SetStateAction } from "react";
 import { PageInfoContext } from "../../../flux/navigation/store";
 import React from "react";
 import { changePage } from "../../../flux/navigation/action";
+import { UserInfoContext } from "../../../flux/user/store";
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
@@ -35,17 +36,23 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome },
   { name: "Profile", icon: FiUser },
-  { name: "Feedback", icon: FiMessageSquare },
+  // { name: "Feedback", icon: FiMessageSquare },
   { name: "Settings", icon: FiSettings },
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
-const {pageDispatch} = React.useContext(PageInfoContext)
+const {pageDispatch} = React.useContext(PageInfoContext);
+const { userState, userDispatch } = React.useContext(UserInfoContext);
 
 const handleClick = (page: string) => {
     // console.info("this is handleClick: ",page);
-    pageDispatch(changePage(page))
+    if(page=="settings"){
+      pageDispatch(changePage(page, userState.userInfo))
+    }
+    else{
+      pageDispatch(changePage(page))
+    }
 }
   return (
     <Box

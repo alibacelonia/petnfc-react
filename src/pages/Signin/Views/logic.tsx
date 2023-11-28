@@ -87,6 +87,10 @@ export const useLogic = () => {
                             errorTitle = "Authentication failed"
                             errorMessage = error.response?.data?.detail
                         }
+                        else if(error.response.status === 401){
+                            errorTitle = "Authentication failed"
+                            errorMessage = error.response?.data?.detail
+                        }
                         else if(error.response.status === 422){
                             errorTitle = "Authentication failed"
                             errorMessage = "Incorrect Email or Password";

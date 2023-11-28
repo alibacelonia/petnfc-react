@@ -13,6 +13,8 @@ import RegisterLoader from "./pages/Pet/Register/Views/loading";
 import QRCodeIsAlreadyTaken from "./pages/Errors/409/Views";
 import PetDetailsLoader from "./pages/Pet/Details/Views/loading";
 import PetFoundPage from "./pages/Pet/Found/Views";
+import VerifyEmailResultPage from "./pages/VerifyEmail/Views";
+import VerifyEmailLoader from "./pages/VerifyEmail/Views/loading";
 
 function App() {
 
@@ -31,17 +33,24 @@ function App() {
           <Route path="/pet/:id/create" element={<RegisterPetPage />} />
         </Route>
 
-        <Route path="/pet/error/not-found" element={<PetNotFound />} />
+        <Route path="/pet/:id/create" element={<RegisterPetPage />} />
+
+        {/* <Route element={<VerifyEmailLoader />}>
+          <Route path="/auth/verify/:id" element={<VerifyEmailResultPage />} />
+        </Route> */}
+
         <Route path="/pet/error/qr-code-is-already-taken" element={<QRCodeIsAlreadyTaken />} />
-        <Route path="signin" element={<SignIn />} />
+        {/* <Route path="signin" element={<SignIn />} /> */}
         {/* <Route path="register" element={<Register />} /> */}
         {/* we want to protect these routes */}
+        
         <Route element={<PersistLogin />}>
           <Route path="signin" element={<SignIn />} />
-          <Route element={<RequireAuth />}>
+        </Route>
+
+        <Route element={<RequireAuth />}>
             <Route path="/home" element={<SidebarWithHeader />} />
           </Route>
-        </Route>
 
         {/* catch all */}
         <Route path="*" element={<PageNotFound />} />
