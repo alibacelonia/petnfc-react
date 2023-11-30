@@ -364,8 +364,13 @@ const PetAddPage = () => {
 
       for (const key in formdata) {
         if (formdata.hasOwnProperty(key)) {
-          const value = (formdata as any)[key]; // Type assertion here
-          formDataWithFile.append(key, value);
+          if(key=="owner_id"){
+            formDataWithFile.append("owner_id", userState.userInfo.id);
+          }
+          else{
+            const value = (formdata as any)[key]; // Type assertion here
+            formDataWithFile.append(key, value);
+          }
         }
       }
 
@@ -386,7 +391,9 @@ const PetAddPage = () => {
         });
     }
     else{
-      axiosPrivate.put(`/pet/${formdata.unique_id}/update`, formdata)
+      let finalFormData = formdata
+      finalFormData.owner_id = userState.userInfo.id
+      axiosPrivate.put(`/pet/${formdata.unique_id}/update`, finalFormData)
         .then((response) => {
           petDispatch(addPet(response.data));
           pageDispatch(changePage("home_pet_details", response.data))
@@ -460,7 +467,8 @@ const PetAddPage = () => {
                 .get(`/pet/${decodedID}`)
                 .then((response) => {
                     const data = response.data;
-                    if (data.owner_id) {
+                    console.info("HAHAHAKDOG: ",data)
+                    if (data.owner) {
                         toast({
                             position: "top",
                             title: "QR Code Already Used",
@@ -471,8 +479,7 @@ const PetAddPage = () => {
                             duration: 4000,
                         });
                     } else {
-                        setFormData(data);
-                        console.info("not existed", data);
+                        setFormData(data.pet);
                         goToNext();
                         onClose();
                     }
@@ -965,7 +972,7 @@ const PetAddPage = () => {
                 type="submit"
                 className="text-xs lg:text-sm text-white bg-blue-500 px-8 py-3 rounded-md shadow-md hover:bg-blue-600 transition duration-150 ease-out"
               >
-                Update
+                Save
               </button>
             </div>
           </form>

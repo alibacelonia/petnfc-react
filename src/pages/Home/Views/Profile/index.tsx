@@ -59,7 +59,7 @@ const ProfilePage = () => {
                 {userInfo.street_address}, &nbsp;
                 {userInfo.city} , &nbsp;
                 {userInfo.state} , &nbsp;
-                {userInfo.country} , &nbsp;
+                {/* {userInfo.country} , &nbsp; */}
                 {userInfo.postal_code} 
               </p>
             </div>

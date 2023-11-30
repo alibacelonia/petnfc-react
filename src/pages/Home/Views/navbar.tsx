@@ -298,7 +298,10 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         isOpen={isOpenModal1}
         onClose={onCloseModal1}
       >
-        <ModalOverlay />
+        <ModalOverlay
+          bg='blackAlpha.300'
+          backdropFilter='blur(10px) '
+        />
         <ModalContent>
           <form onSubmit={handleSubmit(onSubmit)}>
           <ModalHeader className="text-gray-700 mt-2 mb-4">
