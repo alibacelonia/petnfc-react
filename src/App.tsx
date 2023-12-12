@@ -15,6 +15,7 @@ import PetDetailsLoader from "./pages/Pet/Details/Views/loading";
 import PetFoundPage from "./pages/Pet/Found/Views";
 import VerifyEmailResultPage from "./pages/VerifyEmail/Views";
 import VerifyEmailLoader from "./pages/VerifyEmail/Views/loading";
+import AdminPage from "./pages/Admin/Views";
 
 function App() {
 
@@ -48,7 +49,11 @@ function App() {
           <Route path="signin" element={<SignIn />} />
         </Route>
 
-        <Route element={<RequireAuth />}>
+          <Route element={<RequireAuth />}>
+            <Route path="/adminpanel" element={<AdminPage />} />
+          </Route>
+
+          <Route element={<RequireAuth />}>
             <Route path="/home" element={<SidebarWithHeader />} />
           </Route>
 

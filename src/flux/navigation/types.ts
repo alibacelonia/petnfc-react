@@ -2,7 +2,8 @@ import { PetInfo } from "../pets/types";
 
 export type PageInfoContextState = {
     selectedPage: string
-    pageData: any
+    pageData: any,
+    history: PageAction[];
 }
 
 export enum PageActionType {

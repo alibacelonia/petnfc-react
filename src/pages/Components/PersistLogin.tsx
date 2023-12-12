@@ -44,7 +44,7 @@ const PersistLogin = () => {
                 ? <Outlet />
                 : isLoading
                     ? <LoadingComponent />
-                    : auth?.accessToken ? <Navigate to="/home" state={{ from: location }} replace /> : <Outlet />
+                    : auth?.accessToken ? auth?.role == "admin" ? <Navigate to="/adminpanel" state={{ from: location }} replace /> : <Navigate to="/home" state={{ from: location }} replace /> : <Outlet />
             }
         </>
     )

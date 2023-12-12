@@ -21,7 +21,8 @@ export const reducer = (
             return {
                 ...state,
                 selectedPage: page,
-                pageData:  action.payload?.pageData
+                pageData:  action.payload?.pageData,
+                history: [...state.history, action],
             }
     }
 }

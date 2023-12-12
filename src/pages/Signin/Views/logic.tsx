@@ -20,7 +20,7 @@ export const useLogic = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || "/home";
+    const from = location.state?.from?.pathname;
 
     const [dbError, setError] = useState("");
 
@@ -66,12 +66,12 @@ export const useLogic = () => {
                     .post("/auth/login", loginData)
 
                 const accessToken = response?.data?.access_token;
-                const roles = response?.data?.roles;
-
-                setAuth({ emailValue, passwordValue, roles, accessToken });
+                const role = response?.data?.role;
+                console.log(response?.data);
+                setAuth({ emailValue, passwordValue, role, accessToken });
                 setUsername('');
                 setPassword('');
-                navigate(from, { replace: true });
+                navigate(role == "admin" ? '/adminpanel' : "/home", { replace: true });
             }
             catch (error: any) {
 

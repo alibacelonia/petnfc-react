@@ -24,6 +24,8 @@ export type UserInfo = {
     otp: string;
     otp_secret: string;
     otp_created_at: string;
+
+    status: string;
 }
 
 

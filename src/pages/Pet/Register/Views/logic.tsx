@@ -401,7 +401,6 @@ const chakraStyles: ChakraStylesConfig = {
       }
 
       formDataWithFile.append("file", file as Blob);
-
       axios
         .post(`/pet/register`, formDataWithFile, {
           headers: { "Content-Type": "multipart/form-data" },

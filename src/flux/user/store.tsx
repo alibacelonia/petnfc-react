@@ -29,6 +29,7 @@ export const UserInfoContext = React.createContext<UserContextType>({
             otp: "",
             otp_secret: "",
             otp_created_at: "",
+            status: "active"
           },
         history: []
     },
@@ -62,6 +63,7 @@ export const UserProvider = ({children} : {children?: React.ReactNode}) => {
             otp: "",
             otp_secret: "",
             otp_created_at: "",
+            status: "active"
           },
         history: []
     })

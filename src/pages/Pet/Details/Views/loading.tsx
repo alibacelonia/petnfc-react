@@ -25,7 +25,7 @@ const PetDetailsLoader = () => {
             axiosPrivate.get(`/pet/${id}/check`).then((response)=>{
                 if(response.data.has_owner){
                     setIsLoading(false)
-                    navigate('/pet/error/qr-code-is-already-taken', { replace: true })
+                    // navigate('/pet/error/qr-code-is-already-taken', { replace: true })
                 }
                 else{
                     navigate(`/pet/${id}/found`, { replace: true });

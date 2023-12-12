@@ -13,7 +13,8 @@ let savedPageData: PetInfo | null = savedPageDataString ? JSON.parse(savedPageDa
 export const PageInfoContext = React.createContext<PageContextType>({
     pageState:{
         selectedPage: savedPage,
-        pageData: savedPageData
+        pageData: savedPageData,
+        history: []
     },
     pageDispatch: () => void 0,
 })
@@ -35,7 +36,8 @@ export const PageProvider = ({ children }: { children?: React.ReactNode }) => {
 
     const [pageState, pageDispatch] = React.useReducer(reducer, {
         selectedPage: savedPage,
-        pageData: savedPageData
+        pageData: savedPageData,
+        history: []
     });
 
     return (
