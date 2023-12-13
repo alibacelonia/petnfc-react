@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, DownloadIcon, ViewIcon } from "@chakra-ui/icons";
+import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon, ViewIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertIcon,
@@ -12,11 +12,19 @@ import {
   MenuItemOption,
   MenuList,
   MenuOptionGroup,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Stack,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Tfoot,
   Th,
   Thead,
@@ -44,6 +52,122 @@ const AdminUsersPage = () => {
     setUserData,
     getUsers,
   } = useLogic();
+
+  const handlePageChange = async (value: number) => {
+    setPageNumber(value);
+  };
+
+  const renderPageButtons = () => {
+    const buttons = [];
+
+    const renderButton = (value: number) => (
+      <Button
+        // isDisabled={true}
+        key={value}
+        onClick={() => handlePageChange(value)}
+        position="relative"
+        display="inline-flex"
+        px={0}
+        py={0}
+        as="button"
+        rounded="none"
+        fontWeight="semibold"
+        ring="1"
+        ringInset="inset"
+        ringColor="gray.300"
+        bg={pageNumber === value ? "blue.500" : "white"}
+        textColor={pageNumber === value ? "white" : "gray.700"}
+        _hover={{
+          bg: pageNumber === value ? "blue.600" : "gray.50",
+          textColor: pageNumber === value ? "white" : "gray.700",
+        }}
+        _focus={{
+          bg: "sky.600",
+          outline: "none",
+          boxShadow: "outline",
+          ring: "0",
+        }}
+      >
+        {value}
+      </Button>
+    );
+
+    if (totalPages <= 10) {
+      // Display all buttons when there are 10 or fewer pages
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(renderButton(i));
+      }
+    } else {
+      // Display a subset of buttons with ellipses
+      if (pageNumber <= 4) {
+        for (let i = 1; i <= 5; i++) {
+          buttons.push(renderButton(i));
+        }
+        buttons.push(
+          <span
+            key="ellipsis1"
+            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-inset ring-gray-300 ${
+              false
+                ? "ring-0 cursor-not-allowed opacity-50 "
+                : "ring-1  opacity-100"
+            }`}
+          >
+            ...
+          </span>
+        );
+        buttons.push(renderButton(totalPages));
+      } else if (pageNumber >= totalPages - 3) {
+        buttons.push(renderButton(1));
+        buttons.push(
+          <span
+            key="ellipsis2"
+            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-inset ring-gray-300 ${
+              false
+                ? "ring-0 cursor-not-allowed opacity-50 "
+                : "ring-1  opacity-100"
+            }`}
+          >
+            ...
+          </span>
+        );
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          buttons.push(renderButton(i));
+        }
+      } else {
+        buttons.push(renderButton(1));
+        buttons.push(
+          <span
+            key="ellipsis3"
+            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-inset ring-gray-300 ${
+              false
+                ? "ring-0 cursor-not-allowed opacity-50 "
+                : "ring-1  opacity-100"
+            }`}
+          >
+            ...
+          </span>
+        );
+        for (let i = pageNumber - 1; i <= pageNumber + 1; i++) {
+          buttons.push(renderButton(i));
+        }
+        buttons.push(
+          <span
+            key="ellipsis4"
+            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-inset ring-gray-300 ${
+              false
+                ? "ring-0 cursor-not-allowed opacity-50 "
+                : "ring-1  opacity-100"
+            }`}
+          >
+            ...
+          </span>
+        );
+        buttons.push(renderButton(totalPages));
+      }
+    }
+
+    return buttons;
+  };
 
   return (
     <>
@@ -124,6 +248,80 @@ const AdminUsersPage = () => {
                     </Tr>
                   )}
                 </Tbody>
+
+                <Tfoot>
+                  <Tr>
+                    <Td colSpan={6}>
+                      <div className=" bg-white py-3 ">
+                        <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
+                          <div className="">
+                            <p className="text-sm text-gray-700">
+                              Showing{" "}
+                              <span className="font-medium">
+                                {(pageNumber - 1) * pageLimit + 1}
+                              </span>{" "}
+                              to{" "}
+                              <span className="font-medium">
+                                {Math.min(pageLimit * pageNumber, totalItems)}
+                              </span>{" "}
+                              of{" "}
+                              <span className="font-medium">{totalItems}</span>{" "}
+                              results
+                            </p>
+                          </div>
+                          <div>
+                            <nav
+                              className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                              aria-label="Pagination"
+                            >
+                              <Button
+                                as="button"
+                                roundedLeft="md"
+                                roundedRight="none"
+                                px="0"
+                                py="0"
+                                bg="white"
+                                color="gray.400"
+                                ring="1"
+                                ringInset="inset"
+                                ringColor="gray.300"
+                                _hover={{ bg: "gray.50" }}
+                                _focus={{ z: "20", outlineOffset: "0" }}
+                                onClick={() => handlePageChange(pageNumber - 1)}
+                                isDisabled={pageNumber === 1}
+                              >
+                                <span className="sr-only">Previous</span>
+                                <ChevronLeftIcon boxSize={5} />
+                              </Button>
+
+                              {renderPageButtons()}
+
+                              <Button
+                                as="button"
+                                roundedLeft="none"
+                                roundedRight="md"
+                                px="0"
+                                py="0"
+                                bg="white"
+                                color="gray.400"
+                                ring="1"
+                                ringInset="inset"
+                                ringColor="gray.300"
+                                _hover={{ bg: "gray.50" }}
+                                _focus={{ z: "20", outlineOffset: "0" }}
+                                onClick={() => handlePageChange(pageNumber + 1)}
+                                isDisabled={pageNumber === totalPages}
+                              >
+                                <span className="sr-only">Next</span>
+                                <ChevronRightIcon boxSize={5} />
+                              </Button>
+                            </nav>
+                          </div>
+                        </div>
+                      </div>
+                    </Td>
+                  </Tr>
+                </Tfoot>
               </Table>
             </TableContainer>
           </div>

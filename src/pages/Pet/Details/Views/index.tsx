@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { axiosPrivate } from '../../../../api/axios';
 import { HiOutlineDeviceMobile, HiOutlineLocationMarker, HiOutlineMail, HiOutlinePhoneOutgoing } from 'react-icons/hi';
 import { MdOutlineWhatsapp } from 'react-icons/md';
+import { Badge } from '@chakra-ui/react';
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const PetPublicDetailsPage = () => {
 
@@ -133,7 +134,7 @@ const PetPublicDetailsPage = () => {
                     href={`tel:${(petInfo as any)["owner"]["phone_number"]}`}
                     className="text-white text-sm"
                   >
-                    <div className="bg-sky-700 flex flex-row gap-1 items-center justify-center w-32 rounded-full py-1">
+                    <div className="bg-sky-600 flex flex-row gap-1 items-center justify-center w-32 rounded-full py-1">
                       <HiOutlinePhoneOutgoing
                         size={16}
                         className="text-gray-100"
@@ -155,7 +156,7 @@ const PetPublicDetailsPage = () => {
                     href={`mailto:${(petInfo as any)["owner"]["email"]}`}
                     className="text-white text-sm "
                   >
-                    <div className="bg-sky-700 flex flex-row gap-1 items-center justify-center w-32 rounded-full py-1">
+                    <div className="bg-sky-600 flex flex-row gap-1 items-center justify-center w-32 rounded-full py-1">
                       <HiOutlineMail
                         size={16}
                         className="text-gray-100"
@@ -182,7 +183,7 @@ const PetPublicDetailsPage = () => {
                     rel="noopener noreferrer"
                     className="text-white text-sm"
                   >
-                    <div className="bg-sky-700 flex flex-row gap-1 items-center justify-center w-32 rounded-full py-1">
+                    <div className="bg-sky-600 flex flex-row gap-1 items-center justify-center w-32 rounded-full py-1">
                       <HiOutlineLocationMarker
                         size={16}
                         className="text-gray-100"
@@ -216,7 +217,7 @@ const PetPublicDetailsPage = () => {
                     href={`tel:${(petInfo as any)["owner"]["secondary_contact_number"]}`}
                     className="text-white text-sm"
                   >
-                    <div className="bg-sky-700 flex flex-row gap-1 items-center justify-center w-32 rounded-full py-1">
+                    <div className="bg-sky-600 flex flex-row gap-1 items-center justify-center w-32 rounded-full py-1">
                       <HiOutlinePhoneOutgoing
                         size={16}
                         className="text-gray-100"
@@ -257,7 +258,11 @@ const PetPublicDetailsPage = () => {
                     (petInfo as any)["pet"]["behavior"] ?
                     
                     (petInfo as any)["pet"]["behavior"].split(",").map((item: string) => {
-                      return (<span className='inline bg-blue-200 text-blue-700 rounded-full px-5  mr-1 py-1 text-sm'>{item}</span>
+                      // return (<span className='inline-block bg-blue-200 text-blue-700 rounded-full px-5  mr-1 py-1 text-sm'>{item}</span>)
+                      return (
+                        <Badge variant='solid' colorScheme='blue' mr={1} >
+                          {item}
+                        </Badge>
                       )
                     }) :
                       <span className='text-gray-300'> Behavior not specified.</span>
