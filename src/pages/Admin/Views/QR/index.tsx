@@ -71,6 +71,7 @@ import {
 } from "react-icons/hi2";
 import axios, { axiosPrivate } from "../../../../api/axios";
 import { PetInfo } from "../../../../flux/pets/types";
+import { useForm } from "react-hook-form";
 
 const AdminQRPage = () => {
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -104,6 +105,12 @@ const AdminQRPage = () => {
     onCloseAlert,
     onOpenAlert,
   } = useLogic();
+
+
+  const {
+    handleSubmit: handleDownloadAll,
+    formState: { isSubmitting: isDownloadingAll }
+  } = useForm();
 
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
   const [allChecked, setAllChecked] = React.useState(false);
@@ -252,6 +259,33 @@ const AdminQRPage = () => {
           "Content-Type": "application/json",
           Accept: "application/zip", // Indicate that you expect a ZIP file in the response
         },
+        withCredentials: true,
+        responseType: "arraybuffer", // Indicate that the response should be treated as binary data
+      })
+      .then((response) => {
+        // console.info("response: ", response);
+        const blob = new Blob([response.data], { type: "application/zip" });
+
+        // Create a link and trigger download
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "qr_codes.zip";
+        link.click();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const downloadAll = async () => {
+    // console.info("to be downloaded: ", data);
+    await axios
+      .post(`/pet/generate-qr-all`, {}, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/zip", // Indicate that you expect a ZIP file in the response
+        },
+        withCredentials: true,
         responseType: "arraybuffer", // Indicate that the response should be treated as binary data
       })
       .then((response) => {
@@ -468,7 +502,7 @@ const AdminQRPage = () => {
 
                         <Td className="table-fixed w-72 md:w-80">
                           <div className="flex gap-2">
-                            {moment(data.created_at).format("LL")}
+                            {moment(data.created_at).format("lll")}
                             {moment().diff(moment(data.created_at), 'days') < 2 ? (
                               <Badge variant="outline" colorScheme="blue">
                                 New
@@ -623,20 +657,41 @@ const AdminQRPage = () => {
                 checkedItems.filter((value) => value).length
               } QR code selected`}</p>
 
-              <button
-                className="outline outline-offset-2 outline-2 outline-sky-600 text-sky-600 rounded-md px-4 py-2 font-bold text-sm lg:text-base"
+              <Button
+              bg="blue.500"
+              color="white"
+              fontSize="xs"
+              rounded="sm"
+              _hover={{ bg: "blue.600" }}
+              isDisabled={isDownloadingAll}
+                // className="outline outline-offset-2 outline-2 outline-sky-600 text-sky-600 rounded-md px-4 py-2 font-bold text-sm lg:text-base"
                 onClick={downloadSelected}
               >
                 Download Selected
-              </button>
-              {/* <button className="outline outline-offset-2 outline-2 outline-sky-600 text-sky-600 rounded-md px-4 py-2 font-bold text-sm lg:text-base">
+              </Button>
+              <Button 
+              bg="blue.500"
+              color="white"
+              fontSize="xs"
+              rounded="sm"
+              _hover={{ bg: "blue.600" }}
+              isDisabled={isDownloadingAll}
+              isLoading={isDownloadingAll}
+              loadingText="Zipping QR Codes..."
+              onClick={handleDownloadAll(downloadAll)}>
                 Download All {totalItems ? `(${totalItems} record${totalItems > 1 ? "s" : ""})` : ""} 
-              </button> */}
+              </Button>
               <div
                 className="pr-2 pl-4 hidden sm:block"
                 onClick={() => {
-                  setCheckedItems(new Array(qrData.length).fill(false));
-                  setAllChecked(false);
+                  if (isDownloadingAll) {
+
+                  }
+                  else{
+                    setCheckedItems(new Array(qrData.length).fill(false));
+                    setAllChecked(false);
+                  }
+                    
                 }}
               >
                 <HiOutlineXMark />
@@ -645,8 +700,13 @@ const AdminQRPage = () => {
               <div
                 className="absolute top-4 right-4 block sm:hidden z-50"
                 onClick={() => {
-                  setCheckedItems(new Array(qrData.length).fill(false));
-                  setAllChecked(false);
+                  if (isDownloadingAll) {
+
+                  }
+                  else{
+                    setCheckedItems(new Array(qrData.length).fill(false));
+                    setAllChecked(false);
+                  }
                 }}
               >
                 <HiOutlineXMark />

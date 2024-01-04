@@ -56,15 +56,16 @@ export const useLogic = () => {
                 .post(`/pet/generate-records?num_records=${generateData.number_records}`, {})
 
             const generated = response?.data;
-            console.info("GENERATED: ", generated);
 
             setAlertResponse({
                 "status": "success",
                 "title": "QR Code Generated Successfully!",
                 "message": "Congratulations! You have successfully generated a QR code. Use it wisely and securely share information with ease.",
             });
+            setGenerateData({number_records: 1});
             onOpenAlert();
             onCloseGenerateModal();
+            getQRCodes();
         }
         catch (error: any) {
             console.error(error)
