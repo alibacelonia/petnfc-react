@@ -20,11 +20,11 @@ export default function VerifyEmailLoader(){
                 navigate('/pet/error/not-found', { replace: true });
             } else {
                 axios.get(`/auth/verifyemail/${id}`).then((response) => {
-                    console.log(response);
+                    // console.log(response);
                     setIsSuccess(true);
                     setIsLoading(false);
                 }).catch((e) => {
-                    console.log(e);
+                    // console.log(e);
                     setIsSuccess(false);
                     setIsLoading(false);
                 });

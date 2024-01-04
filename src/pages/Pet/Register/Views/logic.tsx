@@ -249,8 +249,8 @@ const chakraStyles: ChakraStylesConfig = {
     // const onChangeSelect = (newValue: unknown) => {
     if (typeof newValue === "object") {
       // Now we know myObject is an object
-      console.info(`newValue: `, newValue);
-      console.info(`action: `, action);
+      // console.info(`newValue: `, newValue);
+      // console.info(`action: `, action);
       const key: any = action.name;
       const data = JSON.stringify(newValue);
       const newData = JSON.parse(data);
@@ -388,7 +388,7 @@ const chakraStyles: ChakraStylesConfig = {
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (inputs: Inputs) => {
-    console.info("formdata: ", formdata);
+    // console.info("formdata: ", formdata);
     if (file != null) {
       const formDataWithFile = new FormData();
       formDataWithFile.append("guid", formdata.unique_id);
@@ -407,21 +407,21 @@ const chakraStyles: ChakraStylesConfig = {
           withCredentials: true,
         })
         .then((response) => {
-          console.info("response: ", response);
-          //   petDispatch(addPet(response.data));
-          //   pageDispatch(changePage("home_pet_details", response.data))
+          // console.info("response: ", response);
+            // petDispatch(addPet(response.data));
+            // pageDispatch(changePage("home_pet_details", response.data))
         })
         .catch((error) => {
-          console.error(error);
+          // console.error(error);
         });
     } else {
       axiosPrivate
         .put(`/pet/register/`, formdata)
         .then((response) => {
 
-          console.info("response: ", response);
-          //   petDispatch(addPet(response.data));
-          //   pageDispatch(changePage("home_pet_details", response.data))
+          // console.info("response: ", response);
+            // petDispatch(addPet(response.data));
+            // pageDispatch(changePage("home_pet_details", response.data))
         })
         .catch((error) => {
           console.error(error);
@@ -456,7 +456,7 @@ const chakraStyles: ChakraStylesConfig = {
     axiosPrivate.get("/pet/pet-types").then((response) => {
       setPetTypes(response.data);
     });
-    console.log(formdata);
+    // console.log(formdata);
     
   }, []);  
 

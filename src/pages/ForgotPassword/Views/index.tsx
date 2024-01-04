@@ -8,16 +8,33 @@ import {
   Button,
   InputGroup,
   InputRightElement,
-  Checkbox, 
-  Text
+  Checkbox,
+  Alert,
+  AlertIcon,
+  Text,
+  CloseButton,
+  AlertTitle,
+  Box,
+  AlertDescription,
+  useDisclosure
 } from "@chakra-ui/react";
-import { useState, useEffect, useRef } from "react";
-import { useLogic } from "./logic";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
+import { SubmitHandler, useForm } from "react-hook-form";
+import axios, { axiosPrivate } from "../../../api/axios";
+
+export type Inputs = {
+    email: string;
+}
+
+interface AlertResponse {
+    status: "loading" | "info" | "warning" | "success" | "error" | undefined;
+    title: string;
+    message: string;
+}
 
 export function useIsVisible(ref: any) {
-
   const [isIntersecting, setIntersecting] = useState(false);
 
   useEffect(() => {
@@ -34,26 +51,78 @@ export function useIsVisible(ref: any) {
   return isIntersecting;
 }
 
-const SignIn = () => {
+const ForgotPasswordPage = () => {
   const [show, setShow] = useState(false); // Show password variables
   const handleClick = () => setShow(!show); // onClick Show Password Event
 
   const ref1 = useRef<HTMLDivElement>(null); // reference to smoothed element
   const isVisible1 = useIsVisible(ref1); // is visible smooth element
 
+  const [alertResponse, setAlertResponse] = useState<AlertResponse>({ status: undefined, title: "", message: "" });
+  const [emailValue, setUsername] = useState("")
+
   const {
     handleSubmit,
-    onSubmit,
     register,
-    errors,
-    isSubmitting,
-    onChange,
-    emailValue,
-    passwordValue,
-    dbError,
-    persist,
-    togglePersist
-  } = useLogic();
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<Inputs>()
+
+  const {
+    isOpen: isVisible,
+    onClose,
+    onOpen,
+  } = useDisclosure({ defaultIsOpen: false })
+  
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const element = e.target as HTMLInputElement
+        switch (element.name) {
+            case "email":
+                setUsername(element.value);
+                break;
+            default:
+                break
+        }
+    }
+
+    const onSubmit: SubmitHandler<Inputs> = async (inputs: Inputs) => {
+        const { email } = inputs
+
+        const loginData = {email: emailValue}
+        const formData = new FormData();
+        formData.append('email', email);
+
+        await axios.post("/user/reset-password", formData)
+        .then(response => {
+            setAlertResponse({ status : "success", title: "Reset link sent", message: "Password reset link is sent to your email address."});
+            onOpen();
+            setUsername("");
+        })
+        .catch(error => {
+            switch (error.code) {
+                case "ERR_NETWORK":
+                    onOpen();
+                    setAlertResponse({ status : "error", title: error.response.statusText, message: "No response from server."});
+                    break;
+                case "ERR_BAD_REQUEST":
+                    if(error.response.status === 400){
+                        setAlertResponse({ status : "error", title: error.response.statusText, message: error.response?.data?.detail});
+                    }
+                    else{
+                        setAlertResponse({ status : "error", title: error.response.statusText, message: error.response?.data?.detail});
+                    }
+                    break;
+                default:
+                    setAlertResponse({ status : "error", title: error.response.statusText, message: error.response?.data?.detail});
+            }
+            onOpen();
+        });
+    
+    }
+
+    useEffect(() => {
+        // console.info("alert response: ", alertResponse);
+    }, [alertResponse]);
 
   return (
     <section
@@ -76,24 +145,33 @@ const SignIn = () => {
             </div>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="px-6 md:px-0 flex flex-col form-container w-full max-w-sm mb-12"
+              className="px-6 md:px-0 flex flex-col form-container w-full max-w-sm mb-20"
             >
               <h1 className="text-2xl text-center font-semibold text-gray-700">
-                Sign In to your account
+                Forgot your password?
               </h1>
               <p className="text-sm text-center text-gray-500 mt-2">
-                Welcome back!
+                You will get an email with a reset link
               </p>
-
               <div className="flex items-center justify-center mt-4">
-                <span
-                  className={` transition ease-in-out duration-300 text-red-500 font-semibold ${
-                    dbError != "" ? "visible" : "hidden"
-                  }`}
-                >
-                  {dbError ? "Incorrect email or password." : ""}
-                </span>
+                <Alert status={alertResponse.status} display={isVisible ? "flex" : "none"} alignItems="center" justifyContent="start">
+                    <AlertIcon width={4}/>
+                    <Box flexGrow={1}>
+                        <AlertTitle className="text-sm">{alertResponse.title}</AlertTitle>
+                        <AlertDescription className="text-sm">
+                            {alertResponse.message}
+                        </AlertDescription>
+                    </Box>
+                    <CloseButton
+                        alignSelf='flex-start'
+                        position='relative'
+                        right={-1}
+                        top={-1}
+                        onClick={onClose}
+                    />
+                </Alert>
               </div>
+
               <div className="mt-4">
                 <FormControl isInvalid={!!errors.email}>
                   <FormLabel htmlFor="name" fontSize="sm" margin={0}>
@@ -115,62 +193,25 @@ const SignIn = () => {
               </div>
 
               <div className="mt-4">
-                <FormControl isInvalid={!!errors.password}>
-                  <FormLabel htmlFor="password" fontSize="sm" margin={0}>
-                    Password
-                  </FormLabel>
-                  <InputGroup>
-                    <Input
-                      fontSize="sm"
-                      placeholder="Enter password"
-                      type={show ? "text" : "password"}
-                      {...register("password", {
-                        required: "Enter your password",
-                      })}
-                      value={passwordValue}
-                      onChange={onChange}
-                    />
-                    <InputRightElement width="4.5rem">
-                      <Button h="1.75rem" fontWeight="light" size="xs" onClick={handleClick}>
-                        {show ? "Hide" : "Show"}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                  <FormErrorMessage fontSize="xs">
-                    {errors.password && errors.password.message}
-                  </FormErrorMessage>
-                </FormControl>
-              </div>
-
-              <div className="mt-2 flex justify-between">
-                <div>
-                {/* <Checkbox size="sm" 
-                        id="persist"
-                        onChange={togglePersist}
-                        isChecked={persist}>Remember Me</Checkbox> */}
-                </div>
-                <Link to='/forgot-password' className="text-sm font-semibold text-sky-600">Forgot password?</Link>
-              </div>
-
-              <div className="mt-4">
-                <Button type="submit" _active={{bg:"blue.600"}} _hover={{bg:"blue.600"}} isLoading={isSubmitting} bg="blue.500" color="white" fontWeight="regular" className="w-full rounded-md">
-                  Sign In
+                <Button
+                  type="submit"
+                  _active={{ bg: "blue.600" }}
+                  _hover={{ bg: "blue.600" }}
+                  isLoading={isSubmitting}
+                  bg="blue.500"
+                  color="white"
+                  fontWeight="regular"
+                  className="w-full rounded-md"
+                >
+                  Request reset
                 </Button>
               </div>
             </form>
-
-            <div className="flex items-center justify-center gap-1 mb-10">
-              <Text className="text-sm">Don't have and account?</Text>
-              <Link to="/signup/option" className="text-sm font-semibold text-sky-600">
-                  Sign Up
-              </Link>
-            </div>
-
             <Link
-              to={"/"}
+              to={"/signin"}
               className="text-sm text-blue-300 hover:text-blue-500 transition duration-300 ease-out"
             >
-              Back to Home Page
+              Back to Sign In Page
             </Link>
           </div>
         </div>
@@ -210,4 +251,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default ForgotPasswordPage;

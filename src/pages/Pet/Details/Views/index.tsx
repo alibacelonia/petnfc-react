@@ -13,7 +13,7 @@ const PetPublicDetailsPage = () => {
 
   useEffect(() => {
     axiosPrivate.get(`/pet/${id}`).then((response) => {
-      console.info(response.data);
+      // console.info(response.data);
       setPetInfo(response.data)
     }).finally(() => {
       setIsLoading(false);

@@ -67,7 +67,7 @@ export const useLogic = () => {
 
                 const accessToken = response?.data?.access_token;
                 const role = response?.data?.role;
-                console.log(response?.data);
+                // console.log(response?.data);
                 setAuth({ emailValue, passwordValue, role, accessToken });
                 setUsername('');
                 setPassword('');

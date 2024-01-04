@@ -16,6 +16,10 @@ import PetFoundPage from "./pages/Pet/Found/Views";
 import VerifyEmailResultPage from "./pages/VerifyEmail/Views";
 import VerifyEmailLoader from "./pages/VerifyEmail/Views/loading";
 import AdminPage from "./pages/Admin/Views";
+import OrderItemPage from "./pages/Purchase/Views";
+import ForgotPasswordPage from "./pages/ForgotPassword/Views";
+import SignUpOptionPage from "./pages/SignUpOption/Views";
+import ChangePasswordPage from "./pages/ChangePassword/Views";
 
 function App() {
 
@@ -24,6 +28,10 @@ function App() {
       <Routes>
         {/* public routes */}
         <Route path="/" element={<Root />} />
+        <Route path="/signup/option" element={<SignUpOptionPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/change-password/:token" element={<ChangePasswordPage />} />
+        <Route path="/order-petnfc-qr-tag" element={<OrderItemPage />} />
 
         <Route element={<PetDetailsLoader />}>
           <Route path="/pet/:id" element={<PetPublicDetailsPage />} />

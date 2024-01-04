@@ -23,8 +23,8 @@ const splitted = currentPage.split('_');
 const combinedElements = splitted[1] == "qr" ? `${splitted[0]}_${splitted[1]}_${splitted[2]}` : `${splitted[0]}_${splitted[1]}`;
 
 
-console.info(pg)
-console.info(combinedElements)
+// console.info(pg)
+// console.info(combinedElements)
 
   return (
     <Box

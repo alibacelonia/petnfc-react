@@ -14,10 +14,6 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Order Now",
-    page: "order",
-  },
-  {
     label: "Features",
     page: "features",
   },
@@ -43,19 +39,15 @@ const NAV_ITEMS: Array<NavItem> = [
   },
 ];
 
-export default function Navbar() {
+export default function Navbar2() {
   const [navbar, setNavbar] = useState(false);
   return (
     <header className="w-full mx-auto  px-4 sm:px-20 fixed top-0 z-50 shadow bg-white">
       <div className="justify-between md:items-center md:flex">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
-            <SmoothScrollLink
-              to="home"
-              spy={true}
-              smooth={true}
-              offset={-100}
-              duration={500}
+            <Link
+              to="/"
             >
               <div className="container flex items-center space-x-2">
                 <Image
@@ -68,7 +60,7 @@ export default function Navbar() {
                   PetNFC
                 </h1>
               </div>
-            </SmoothScrollLink>
+            </Link>
             <div className="md:hidden">
               <button
                 className="p-2 text-gray-700 rounded-md outline-none focus:border-gray-400 focus:border"
@@ -126,29 +118,27 @@ export default function Navbar() {
                     </Link>
                   );
                 }
-                else if (item.page === "order"){
-                  return (
-                    <Link to={"/order-petnfc-qr-tag"} className={classnames} key={idx}>
-                      {linkText}
-                    </Link>
-                  );
-                }
                 else{
-                  return (
-                    <SmoothScrollLink
-                      key={idx}
-                      to={item.page}
-                      className={classnames}
-                      activeClass="active"
-                      spy={true}
-                      smooth={true}
-                      offset={-100}
-                      duration={500}
-                      onClick={() => setNavbar(!navbar)}
-                    >
-                      {linkText}
-                    </SmoothScrollLink>
-                  )
+                    return (
+                        <Link to={`/#${item.page}`} className={classnames} key={idx}>
+                          {linkText}
+                        </Link>
+                      );
+                //   return (
+                //     <SmoothScrollLink
+                //       key={idx}
+                //       to={item.page}
+                //       className={classnames}
+                //       activeClass="active"
+                //       spy={true}
+                //       smooth={true}
+                //       offset={-100}
+                //       duration={500}
+                //       onClick={() => setNavbar(!navbar)}
+                //     >
+                //       {linkText}
+                //     </SmoothScrollLink>
+                //   )
                 }
               })}
             </div>

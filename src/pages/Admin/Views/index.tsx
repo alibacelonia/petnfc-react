@@ -63,7 +63,7 @@ const MemoizedRenderPage = memo(RenderPage);
 
 const AdminPage = () => {
   useEffect(() => {
-    console.log("first runt");
+    // console.log("first runt");
   }, []);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { currentPage, previousPageInfo } = useLogic();

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLogic } from "./logic";
 import { QRCodeSVG } from "qrcode.react";
 import {
-Badge,
+  Badge,
   Box,
   Button,
   Checkbox,
@@ -12,7 +12,12 @@ Badge,
   DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
+  FormControl,
+  FormLabel,
   IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
   Menu,
   MenuButton,
   MenuDivider,
@@ -20,6 +25,16 @@ Badge,
   MenuItemOption,
   MenuList,
   MenuOptionGroup,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Table,
   TableContainer,
   Tbody,
@@ -27,8 +42,16 @@ Badge,
   Tfoot,
   Th,
   Thead,
+  Tooltip,
   Tr,
   useDisclosure,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Alert,
+  AlertIcon,
+  CloseButton,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import moment from "moment";
 import {
@@ -37,16 +60,19 @@ import {
   ChevronRightIcon,
   DownloadIcon,
   ExternalLinkIcon,
+  SearchIcon,
   ViewIcon,
 } from "@chakra-ui/icons";
 import BottomSheet from "../../../../common/bottomsheet";
-import { HiEllipsisVertical, HiOutlineXMark } from "react-icons/hi2";
+import {
+  HiArrowPath,
+  HiEllipsisVertical,
+  HiOutlineXMark,
+} from "react-icons/hi2";
 import axios, { axiosPrivate } from "../../../../api/axios";
 import { PetInfo } from "../../../../flux/pets/types";
 
 const AdminQRPage = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
   const {
     pageNumber,
@@ -62,6 +88,21 @@ const AdminQRPage = () => {
     qrData,
     setQrData,
     getQRCodes,
+    registerGenerate,
+    errorsGenerate,
+    isGenerateSubmitting,
+    handleGenerateSubmit,
+    resetGenerate,
+    onSubmitGenerate,
+    alertResponse,
+    generateData,
+    setGenerateData,
+    isOpenGenerateModal,
+    onOpenGenerateModal,
+    onCloseGenerateModal,
+    isAlertOpen,
+    onCloseAlert,
+    onOpenAlert,
   } = useLogic();
 
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
@@ -203,33 +244,34 @@ const AdminQRPage = () => {
     return buttons;
   };
 
-  const download = async (data: PetInfo[]) =>{
-    console.info("to be downloaded: ", data);
-    await axios.post(`/pet/generate_qr_zip`, JSON.stringify(data), {
+  const download = async (data: PetInfo[]) => {
+    // console.info("to be downloaded: ", data);
+    await axios
+      .post(`/pet/generate_qr_zip`, JSON.stringify(data), {
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/zip', // Indicate that you expect a ZIP file in the response
+          "Content-Type": "application/json",
+          Accept: "application/zip", // Indicate that you expect a ZIP file in the response
         },
-        responseType: 'arraybuffer', // Indicate that the response should be treated as binary data
+        responseType: "arraybuffer", // Indicate that the response should be treated as binary data
       })
-    .then((response)=>{
-        console.info("response: ", response);
-        const blob = new Blob([response.data], { type: 'application/zip' });
+      .then((response) => {
+        // console.info("response: ", response);
+        const blob = new Blob([response.data], { type: "application/zip" });
 
         // Create a link and trigger download
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = 'qr_codes.zip';
+        link.download = "qr_codes.zip";
         link.click();
-    })
-    .catch((err)=>{
+      })
+      .catch((err) => {
         console.error(err);
-    });
-  }
+      });
+  };
 
   const downloadSingle = async (data: PetInfo) => {
-   await download([data])
-  }
+    await download([data]);
+  };
 
   const downloadSelected = async () => {
     const filteredArray = qrData.filter((person, index) => checkedItems[index]);
@@ -249,11 +291,86 @@ const AdminQRPage = () => {
   return (
     <>
       <div className="relative ml-0 md:ml-60 bg-yello-200 py-4 px-4 md:px-10 z-10">
+        <div className="flex items-center justify-center mt-4">
+          <Alert
+            status={alertResponse.status}
+            display={isAlertOpen ? "flex" : "none"}
+            alignItems="center"
+            justifyContent="start"
+          >
+            <AlertIcon width={4} />
+            <Box flexGrow={1}>
+              <AlertTitle className="text-sm">{alertResponse.title}</AlertTitle>
+              <AlertDescription className="text-sm">
+                {alertResponse.message}
+              </AlertDescription>
+            </Box>
+            <CloseButton
+              alignSelf="flex-start"
+              position="relative"
+              right={-1}
+              top={-1}
+              onClick={onCloseAlert}
+            />
+          </Alert>
+        </div>
+
         <div className="flex items-end min-w-full justify-between h-12">
           <h1 className="pl-2 md:pl-0 text-xl md:text-2xl tracking-normal font-bold text-gray-700">
             QR Codes
           </h1>
         </div>
+
+        <div className="mt-4 flex flex-col md:flex-row justify-between gap-2">
+          <div className="flex gap-2">
+            <Button
+              bg="blue.500"
+              color="white"
+              fontSize="xs"
+              rounded="sm"
+              _hover={{ bg: "blue.600" }}
+              onClick={() => {
+                onOpenGenerateModal();
+              }}
+            >
+              Generate QR Code
+            </Button>
+            <Tooltip label="Refresh Data" placement="right">
+              <IconButton
+                aria-label="Search database"
+                onClick={getQRCodes}
+                icon={<HiArrowPath />}
+              />
+            </Tooltip>
+          </div>
+          {/* <div className="">
+            <InputGroup size='md'>
+              <Input
+                bg="white"
+                htmlSize={35}
+                pr='4.5rem'
+                type="text"
+                fontSize="xs"
+                placeholder='Search for ...'
+              />
+              <InputRightElement width='4.5rem'>
+                
+              <Button
+                bg="blue.500"
+                color="white"
+                fontSize="xs"
+                rounded="sm"
+                _hover={{ bg: "blue.600" }}
+                onClick={() => {
+                }}
+              >
+                Search
+              </Button>
+              </InputRightElement>
+            </InputGroup>
+          </div> */}
+        </div>
+
         <div className="relative min-h-screen mt-5">
           <div className="bg-white">
             <TableContainer>
@@ -293,7 +410,7 @@ const AdminQRPage = () => {
                               title="Status"
                               type="radio"
                               onChange={(e) => {
-                                setPageNumber(1)
+                                setPageNumber(1);
                                 setFilters("qr=" + e);
                               }}
                             >
@@ -301,7 +418,9 @@ const AdminQRPage = () => {
                               <MenuItemOption value="not-used">
                                 Available
                               </MenuItemOption>
-                              <MenuItemOption value="used">Taken</MenuItemOption>
+                              <MenuItemOption value="used">
+                                Taken
+                              </MenuItemOption>
                             </MenuOptionGroup>
                           </MenuList>
                         </Menu>
@@ -326,30 +445,38 @@ const AdminQRPage = () => {
                           ></Checkbox>
                         </Td>
                         <Td>
-                            <div className="flex justify-center items-start gap-2">
-                                <QRCodeSVG
-                                    className="cursor-pointer"
-                                    value={`https://secure-petz.info/${data.unique_id}`}
-                                    size={50}
-                                    fgColor="#0284c7"
-                                />
-                            </div>
+                          <div className="flex justify-center items-start gap-2">
+                            <QRCodeSVG
+                              className="cursor-pointer"
+                              value={`https://secure-petz.info/${data.unique_id}`}
+                              size={50}
+                              fgColor="#0284c7"
+                            />
+                          </div>
                         </Td>
                         <Td className="table-fixed w-72">
-                            <div className="flex gap-2">
-                            {data.owner_id ? 
-                                <Badge variant='solid' colorScheme='blue'>Taken</Badge>:
-                                <Badge variant='solid' >Available</Badge>}
-
-
-                                {false ? 
-                                <Badge variant='outline' colorScheme='blue'>New</Badge> : ""}
-                            </div>
-                          
+                          <div className="flex gap-2">
+                            {data.owner_id ? (
+                              <Badge variant="solid" colorScheme="blue">
+                                Taken
+                              </Badge>
+                            ) : (
+                              <Badge variant="solid">Available</Badge>
+                            )}
+                          </div>
                         </Td>
 
                         <Td className="table-fixed w-72 md:w-80">
-                          {moment(data.created_at).format("LL")}
+                          <div className="flex gap-2">
+                            {moment(data.created_at).format("LL")}
+                            {moment().diff(moment(data.created_at), 'days') < 2 ? (
+                              <Badge variant="outline" colorScheme="blue">
+                                New
+                              </Badge>
+                            ) : (
+                              ""
+                            )}
+                          </div>
                         </Td>
                         <Td className="table-fixed w-72 md:w-96">
                           <div className="hidden sm:flex justify-center items-center gap-2">
@@ -361,7 +488,7 @@ const AdminQRPage = () => {
                               rounded="sm"
                               _hover={{ bg: "blue.600" }}
                               onClick={() => {
-                                downloadSingle(data)
+                                downloadSingle(data);
                               }}
                             >
                               Download
@@ -395,7 +522,7 @@ const AdminQRPage = () => {
                                 <MenuItem
                                   icon={<DownloadIcon />}
                                   onClick={() => {
-                                    downloadSingle(data)
+                                    downloadSingle(data);
                                   }}
                                 >
                                   Download
@@ -515,19 +642,78 @@ const AdminQRPage = () => {
                 <HiOutlineXMark />
               </div>
 
-          <div
-            className="absolute top-4 right-4 block sm:hidden z-50"
-            onClick={() => {
-              setCheckedItems(new Array(qrData.length).fill(false));
-              setAllChecked(false);
-            }}
-          >
-            <HiOutlineXMark />
-          </div>
+              <div
+                className="absolute top-4 right-4 block sm:hidden z-50"
+                onClick={() => {
+                  setCheckedItems(new Array(qrData.length).fill(false));
+                  setAllChecked(false);
+                }}
+              >
+                <HiOutlineXMark />
+              </div>
             </div>
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={isOpenGenerateModal}
+        onClose={onCloseGenerateModal}
+        closeOnOverlayClick={false}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <form onSubmit={handleGenerateSubmit(onSubmitGenerate)}>
+            <ModalHeader className="text-gray-700">
+              Generate QR Codes
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <FormControl>
+                <FormLabel className="text-gray-700">
+                  Number of QR Codes to be generated
+                </FormLabel>
+                <NumberInput
+                  defaultValue={1}
+                  min={1}
+                  max={1000}
+                  onChange={(val, num) =>
+                    setGenerateData({ number_records: num })
+                  }
+                  value={generateData.number_records}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                {/* <Input placeholder='First name' className="text-gray-700"/> */}
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button
+                type="submit"
+                colorScheme="blue"
+                mr={3}
+                isLoading={isGenerateSubmitting}
+                loadingText="Generating..."
+                isDisabled={isGenerateSubmitting}
+              >
+                Generate
+              </Button>
+              <Button
+                onClick={onCloseGenerateModal}
+                isDisabled={isGenerateSubmitting}
+                className="text-gray-700"
+              >
+                Cancel
+              </Button>
+            </ModalFooter>
+          </form>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

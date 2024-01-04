@@ -52,7 +52,7 @@ export const useLogic = () => {
     // Batching localStorage calls
     if (pageState.selectedPage !== undefined) {
       const { selectedPage, pageData } = pageState;
-        console.log("selectedPage: " + selectedPage)
+        // console.log("selectedPage: " + selectedPage)
       const state2 = pageStateHistory[pageStateHistory.length - 2]
       setPreviousPageInfo(state2)
       // Set the current page and page data in localStorage
@@ -135,7 +135,7 @@ export const useLogic = () => {
 
         const decryptedText = decryptData(response1?.data.key,  response1?.data.data);
         const userObj = JSON.parse(decryptedText)
-        console.log(userObj)
+        // console.log(userObj)
 
         userDispatch(fetchUserData(userObj));
         petDispatch(fetchPetData(response2?.data?.pets));
