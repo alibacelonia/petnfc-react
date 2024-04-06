@@ -10,7 +10,7 @@ interface NavItemProps extends FlexProps {
 }
 
 const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
-
+  
   const {pageState} = React.useContext(PageInfoContext)
 
   const currentPage = pageState.selectedPage

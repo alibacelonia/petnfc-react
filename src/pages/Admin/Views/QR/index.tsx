@@ -72,8 +72,12 @@ import {
 import axios, { axiosPrivate } from "../../../../api/axios";
 import { PetInfo } from "../../../../flux/pets/types";
 import { useForm } from "react-hook-form";
+import { PageInfoContext } from "../../../../flux/navigation/store";
+import { changePage } from "../../../../flux/navigation/action";
 
 const AdminQRPage = () => {
+
+  const { pageState, pageDispatch } = React.useContext(PageInfoContext);
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
   const {
     pageNumber,
@@ -106,10 +110,9 @@ const AdminQRPage = () => {
     onOpenAlert,
   } = useLogic();
 
-
   const {
     handleSubmit: handleDownloadAll,
-    formState: { isSubmitting: isDownloadingAll }
+    formState: { isSubmitting: isDownloadingAll },
   } = useForm();
 
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
@@ -280,14 +283,18 @@ const AdminQRPage = () => {
   const downloadAll = async () => {
     // console.info("to be downloaded: ", data);
     await axios
-      .post(`/pet/generate-qr-all`, {}, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/zip", // Indicate that you expect a ZIP file in the response
-        },
-        withCredentials: true,
-        responseType: "arraybuffer", // Indicate that the response should be treated as binary data
-      })
+      .post(
+        `/pet/generate-qr-all`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/zip", // Indicate that you expect a ZIP file in the response
+          },
+          withCredentials: true,
+          responseType: "arraybuffer", // Indicate that the response should be treated as binary data
+        }
+      )
       .then((response) => {
         // console.info("response: ", response);
         const blob = new Blob([response.data], { type: "application/zip" });
@@ -363,6 +370,7 @@ const AdminQRPage = () => {
               fontSize="xs"
               rounded="sm"
               _hover={{ bg: "blue.600" }}
+              isDisabled={isDownloadingAll}
               onClick={() => {
                 onOpenGenerateModal();
               }}
@@ -371,6 +379,7 @@ const AdminQRPage = () => {
             </Button>
             <Tooltip label="Refresh Data" placement="right">
               <IconButton
+                isDisabled={isDownloadingAll}
                 aria-label="Search database"
                 onClick={getQRCodes}
                 icon={<HiArrowPath />}
@@ -503,7 +512,8 @@ const AdminQRPage = () => {
                         <Td className="table-fixed w-72 md:w-80">
                           <div className="flex gap-2">
                             {moment(data.created_at).format("lll")}
-                            {moment().diff(moment(data.created_at), 'days') < 2 ? (
+                            {moment().diff(moment(data.created_at), "days") <
+                            2 ? (
                               <Badge variant="outline" colorScheme="blue">
                                 New
                               </Badge>
@@ -514,6 +524,25 @@ const AdminQRPage = () => {
                         </Td>
                         <Td className="table-fixed w-72 md:w-96">
                           <div className="hidden sm:flex justify-center items-center gap-2">
+
+                            <div className={`${data.owner_id ? "block" : "hidden"}`}>
+                                <Button
+                                colorScheme="blue"
+                                variant='outline'
+                                // bg="blue.500"
+                                // color="white"
+                                size="sm"
+                                fontSize="xs"
+                                rounded="sm"
+                                _hover={{ bg: "blue.600", textColor: "white" }}
+                                onClick={()=>{
+                                  data.owner_id ? 
+                                  pageDispatch(changePage("admin_qr_codes_details", data)) : void 0;
+                                }}
+                                >
+                                View Details
+                                </Button>
+                            </div>
                             <Button
                               bg="blue.500"
                               color="white"
@@ -521,24 +550,13 @@ const AdminQRPage = () => {
                               fontSize="xs"
                               rounded="sm"
                               _hover={{ bg: "blue.600" }}
+                              isDisabled={isDownloadingAll}
                               onClick={() => {
                                 downloadSingle(data);
                               }}
                             >
                               Download
                             </Button>
-                            {/* <div className={`${data.owner_id ? "block" : "hidden"}`}>
-                                <Button
-                                bg="blue.500"
-                                color="white"
-                                size="sm"
-                                fontSize="xs"
-                                rounded="sm"
-                                _hover={{ bg: "blue.600" }}
-                                >
-                                View Details
-                                </Button>
-                            </div> */}
                           </div>
                           <div className="block sm:hidden">
                             <Menu>
@@ -553,7 +571,9 @@ const AdminQRPage = () => {
                                 }}
                               ></MenuButton>
                               <MenuList minWidth="150px">
+                               
                                 <MenuItem
+                                  isDisabled={isDownloadingAll}
                                   icon={<DownloadIcon />}
                                   onClick={() => {
                                     downloadSingle(data);
@@ -561,7 +581,14 @@ const AdminQRPage = () => {
                                 >
                                   Download
                                 </MenuItem>
-                                <MenuItem icon={<ViewIcon />}>
+                                <MenuItem
+                                  icon={<ViewIcon />}
+                                  isDisabled={isDownloadingAll || data.owner_id === null}
+                                  onClick={()=>{
+                                    data.owner_id ? 
+                                    pageDispatch(changePage("admin_qr_codes_details")) : void 0;
+                                  }}
+                                >
                                   View Details
                                 </MenuItem>
                               </MenuList>
@@ -658,40 +685,41 @@ const AdminQRPage = () => {
               } QR code selected`}</p>
 
               <Button
-              bg="blue.500"
-              color="white"
-              fontSize="xs"
-              rounded="sm"
-              _hover={{ bg: "blue.600" }}
-              isDisabled={isDownloadingAll}
+                bg="blue.500"
+                color="white"
+                fontSize="xs"
+                rounded="sm"
+                _hover={{ bg: "blue.600" }}
+                isDisabled={isDownloadingAll}
                 // className="outline outline-offset-2 outline-2 outline-sky-600 text-sky-600 rounded-md px-4 py-2 font-bold text-sm lg:text-base"
                 onClick={downloadSelected}
               >
                 Download Selected
               </Button>
-              <Button 
-              bg="blue.500"
-              color="white"
-              fontSize="xs"
-              rounded="sm"
-              _hover={{ bg: "blue.600" }}
-              isDisabled={isDownloadingAll}
-              isLoading={isDownloadingAll}
-              loadingText="Zipping QR Codes..."
-              onClick={handleDownloadAll(downloadAll)}>
-                Download All {totalItems ? `(${totalItems} record${totalItems > 1 ? "s" : ""})` : ""} 
+              <Button
+                bg="blue.500"
+                color="white"
+                fontSize="xs"
+                rounded="sm"
+                _hover={{ bg: "blue.600" }}
+                isDisabled={isDownloadingAll}
+                isLoading={isDownloadingAll}
+                loadingText="Zipping QR Codes..."
+                onClick={handleDownloadAll(downloadAll)}
+              >
+                Download All{" "}
+                {totalItems
+                  ? `(${totalItems} record${totalItems > 1 ? "s" : ""})`
+                  : ""}
               </Button>
               <div
                 className="pr-2 pl-4 hidden sm:block"
                 onClick={() => {
                   if (isDownloadingAll) {
-
-                  }
-                  else{
+                  } else {
                     setCheckedItems(new Array(qrData.length).fill(false));
                     setAllChecked(false);
                   }
-                    
                 }}
               >
                 <HiOutlineXMark />
@@ -701,9 +729,7 @@ const AdminQRPage = () => {
                 className="absolute top-4 right-4 block sm:hidden z-50"
                 onClick={() => {
                   if (isDownloadingAll) {
-
-                  }
-                  else{
+                  } else {
                     setCheckedItems(new Array(qrData.length).fill(false));
                     setAllChecked(false);
                   }

@@ -77,3 +77,7 @@ body::-webkit-scrollbar-thumb {
 .react-select-custom {
   font-size: 12px !important; /* Set the desired font size here */
 }
+
+iframe{
+  width: 100%;
+}

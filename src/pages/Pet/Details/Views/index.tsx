@@ -260,7 +260,7 @@ const PetPublicDetailsPage = () => {
                     (petInfo as any)["pet"]["behavior"].split(",").map((item: string) => {
                       // return (<span className='inline-block bg-blue-200 text-blue-700 rounded-full px-5  mr-1 py-1 text-sm'>{item}</span>)
                       return (
-                        <Badge variant='solid' colorScheme='blue' mr={1} >
+                        <Badge key={item} variant='solid' colorScheme='blue' mr={1} >
                           {item}
                         </Badge>
                       )

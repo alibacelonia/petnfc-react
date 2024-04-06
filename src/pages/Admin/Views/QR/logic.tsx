@@ -37,10 +37,7 @@ export const useLogic = () => {
       const { isOpen: isOpenGenerateModal, onOpen: onOpenGenerateModal, onClose: onCloseGenerateModal } = useDisclosure();
 
       const {
-        isOpen: isAlertOpen,
-        onClose: onCloseAlert,
-        onOpen: onOpenAlert,
-      } = useDisclosure({ defaultIsOpen: false });
+        isOpen: isAlertOpen,  onClose: onCloseAlert, onOpen: onOpenAlert, } = useDisclosure({ defaultIsOpen: false });
       
     const {
         handleSubmit: handleGenerateSubmit,

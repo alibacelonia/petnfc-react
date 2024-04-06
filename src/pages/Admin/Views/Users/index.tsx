@@ -35,8 +35,12 @@ import { QRCodeSVG } from "qrcode.react";
 import React from "react";
 import { HiCheckBadge, HiEllipsisVertical } from "react-icons/hi2";
 import { useLogic } from "./logic";
+import { PageInfoContext } from "../../../../flux/navigation/store";
+import { changePage } from "../../../../flux/navigation/action";
 
 const AdminUsersPage = () => {
+
+  const { pageState, pageDispatch } = React.useContext(PageInfoContext);
   const {
     pageNumber,
     setPageNumber,
@@ -56,6 +60,7 @@ const AdminUsersPage = () => {
   const handlePageChange = async (value: number) => {
     setPageNumber(value);
   };
+
 
   const renderPageButtons = () => {
     const buttons = [];
@@ -231,7 +236,10 @@ const AdminUsersPage = () => {
                                 variant="outline"
                               ></MenuButton>
                               <MenuList minWidth="150px">
-                                <MenuItem icon={<ViewIcon />}>
+                                <MenuItem icon={<ViewIcon />} onClick={() => {
+                                  console.log("user_data: ", data);
+                                  pageDispatch(changePage('admin_users_details', data))
+                                }}>
                                   View Details
                                 </MenuItem>
                               </MenuList>

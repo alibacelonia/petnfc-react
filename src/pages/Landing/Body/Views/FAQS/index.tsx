@@ -55,6 +55,9 @@ const FAQSection = () => {
                       <span className="text-sm text-indigo-500 font-semibold">Call us </span><HiOutlineArrowSmRight size={20} className="text-indigo-500 "></HiOutlineArrowSmRight>
                     </div>
                   </div> */}
+
+                
+                 <a href="mailto:admin@petnfc.com.au" target="_black" rel="no-referrer">
               <div className="grow sm:shrink-0 bg-slate-100 rounded-lg p-3">
                 <HiOutlineMail
                   size={30}
@@ -62,17 +65,17 @@ const FAQSection = () => {
                 ></HiOutlineMail>
                 <p className="my-4 text-sm  text-slate-700">
                   Still have questions?
-                </p>
-                <div className="flex gap-1">
-                  <span className="text-sm text-green-500 font-semibold">
+                </p><div className="flex gap-1">
+                 <span className="text-sm text-green-500 font-semibold">
                     Email Us{" "}
                   </span>
                   <HiOutlineArrowSmRight
                     size={20}
                     className="text-green-500 "
                   ></HiOutlineArrowSmRight>
-                </div>
+                  </div>
               </div>
+                 </a>
             </div>
           </div>
         </div>

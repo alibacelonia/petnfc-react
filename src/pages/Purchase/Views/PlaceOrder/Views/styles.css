@@ -1,0 +1,174 @@
+html {
+    min-height: 100%;
+    box-sizing: border-box
+}
+
+body,
+html {
+    height: 100%;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.4;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #382f2d;
+    -webkit-tap-highlight-color: transparent;
+    background-color: #fff
+}
+
+*,
+:after,
+:before {
+    box-sizing: inherit
+}
+
+@media (min-width:970px) {
+
+    body,
+    html {
+        font-size: 15px
+    }
+}
+
+.ph-form {
+    width: 100%;
+    padding-bottom: 10px
+}
+
+.ph-form-element {
+    position: relative;
+    margin: 0 0 20px;
+    padding-right: 15px
+}
+
+.ph-form-element input[type=text] {
+    display: block;
+    width: 100%;
+    height: 40px;
+    padding: 7px 10px;
+    border: 1px solid #e2dfda;
+    border-radius: 3px;
+    outline: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    color: #161616;
+    line-height: normal
+}
+
+.ph-form-element input[type=text]:hover {
+    border-color: #807370
+}
+
+.ph-form-element input[type=text]:focus {
+    padding: 6px 9px;
+    border: 2px solid #807370
+}
+
+.ph-form-element input[type=text].ng-invalid.ng-touched {
+    border-color: #bc111e
+}
+
+.ph-form-element-label {
+    display: inline-block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #161616
+}
+
+::-webkit-input-placeholder {
+    color: #c6c3c3
+}
+
+:-moz-placeholder {
+    color: #c6c3c3
+}
+
+::-moz-placeholder {
+    color: #c6c3c3
+}
+
+:-ms-input-placeholder {
+    color: #c6c3c3
+}
+
+.ph-tooltip {
+    display: inline-block;
+    position: relative;
+    z-index: 100;
+    top: -15px;
+    left: 0
+}
+
+.ph-tooltip .ph-tooltip-icon {
+    display: inline-block;
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    cursor: pointer;
+    font-size: 0;
+    line-height: 0;
+    background: url(cvv-tooltip-info.3ecb66175e3af5fdf4f4.svg) no-repeat
+}
+
+.ph-tooltip .ph-tooltip-content {
+    position: absolute;
+    z-index: 150;
+    margin: 0 auto;
+    left: -150px;
+    top: 25px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, .4) 0 0 20px 0;
+    border-radius: 3px
+}
+
+.ph-tooltip .ph-tooltip-content h3,
+.ph-tooltip .ph-tooltip-content p {
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px
+}
+
+.ph-tooltip .ph-tooltip-content h3:focus,
+.ph-tooltip .ph-tooltip-content p:focus {
+    outline: 0
+}
+
+.ph-tooltip .ph-tooltip-content h3 {
+    font-weight: 700;
+    margin: 0 0 5px
+}
+
+.ph-tooltip .ph-tooltip-content p {
+    margin: 0
+}
+
+.ph-tooltip .ph-tooltip-content img {
+    display: block;
+    width: auto;
+    height: 47px;
+    margin: 15px 0 0
+}
+
+.ph-tooltip .ph-tooltip-pointer {
+    position: absolute;
+    left: 158px;
+    top: -5px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #fff
+}
+
+.ph-tooltip .ph-tooltip-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    background: url(icon-cross-transparent.ebde45ef71c268e2a062.png) 0 0/contain no-repeat
+}

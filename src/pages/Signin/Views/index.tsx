@@ -8,16 +8,21 @@ import {
   Button,
   InputGroup,
   InputRightElement,
-  Checkbox, 
-  Text
+  Checkbox,
+  Text,
+  Alert,
+  AlertIcon,
+  Box,
+  AlertTitle,
+  AlertDescription,
+  CloseButton,
 } from "@chakra-ui/react";
 import { useState, useEffect, useRef } from "react";
 import { useLogic } from "./logic";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 export function useIsVisible(ref: any) {
-
   const [isIntersecting, setIntersecting] = useState(false);
 
   useEffect(() => {
@@ -52,7 +57,15 @@ const SignIn = () => {
     passwordValue,
     dbError,
     persist,
-    togglePersist
+    togglePersist,
+
+    isOpenAlert,
+    onCloseAlert,
+    onOpenAlert,
+    alertObj,
+    isOpenResendVerification,
+    resendEmail,
+    isSendingVerification,
   } = useLogic();
 
   return (
@@ -63,7 +76,7 @@ const SignIn = () => {
       } overflow-hidden`}
     >
       <div className="grid grid-cols-2">
-        <div className="bg-white col-span-full rounded-l-lg rounded-r-lg lg:col-span-1 lg:rounded-r-none px-4 relative z-50">
+        <div className="bg-white col-span-full rounded-l-lg rounded-r-lg lg:col-span-1 lg:rounded-r-none px-4 relative z-30">
           <div className="flex flex-col min-h-screen justify-center items-center">
             <div className="flex items-center justify-center w-full max-w-sm mb-4">
               <Image
@@ -85,15 +98,49 @@ const SignIn = () => {
                 Welcome back!
               </p>
 
-              <div className="flex items-center justify-center mt-4">
-                <span
-                  className={` transition ease-in-out duration-300 text-red-500 font-semibold ${
-                    dbError != "" ? "visible" : "hidden"
-                  }`}
-                >
-                  {dbError ? "Incorrect email or password." : ""}
-                </span>
+              <div className="mt-4">
+                {isOpenAlert ? (
+                  <Alert status={alertObj.type}>
+                    <AlertIcon />
+                    <Box>
+                      <AlertTitle>{alertObj.title}</AlertTitle>
+                      <AlertDescription>{alertObj.message}</AlertDescription>
+                    </Box>
+                    <CloseButton
+                      alignSelf="flex-start"
+                      position="relative"
+                      right={-1}
+                      top={-1}
+                      onClick={onCloseAlert}
+                    />
+                  </Alert>
+                ) : (
+                  ""
+                )}
               </div>
+
+              {isOpenResendVerification && !isSendingVerification && isOpenAlert ? (
+                <div className="flex gap-1 mt-4 items-center justify-center">
+                  <h1 className="text-xs text-center font-semibold text-gray-400">
+                    Did not receive verification email?{" "}
+                  </h1>
+                  <h1
+                    className="text-xs text-center font-semibold text-blue-600 cursor-pointer"
+                    onClick={resendEmail}
+                  >
+                    Resend
+                  </h1>
+                </div>
+              ) : isSendingVerification ? (
+                <div className="mt-4">
+                  <h1
+                    className="text-xs text-center font-semibold text-blue-600 cursor-pointer"
+                    onClick={resendEmail}
+                  >
+                    Sending...
+                  </h1>
+                </div>
+              ) : ""}
               <div className="mt-4">
                 <FormControl isInvalid={!!errors.email}>
                   <FormLabel htmlFor="name" fontSize="sm" margin={0}>
@@ -131,7 +178,12 @@ const SignIn = () => {
                       onChange={onChange}
                     />
                     <InputRightElement width="4.5rem">
-                      <Button h="1.75rem" fontWeight="light" size="xs" onClick={handleClick}>
+                      <Button
+                        h="1.75rem"
+                        fontWeight="light"
+                        size="xs"
+                        onClick={handleClick}
+                      >
                         {show ? "Hide" : "Show"}
                       </Button>
                     </InputRightElement>
@@ -144,16 +196,30 @@ const SignIn = () => {
 
               <div className="mt-2 flex justify-between">
                 <div>
-                {/* <Checkbox size="sm" 
+                  {/* <Checkbox size="sm" 
                         id="persist"
                         onChange={togglePersist}
                         isChecked={persist}>Remember Me</Checkbox> */}
                 </div>
-                <Link to='/forgot-password' className="text-sm font-semibold text-sky-600">Forgot password?</Link>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm font-semibold text-sky-600"
+                >
+                  Forgot password?
+                </Link>
               </div>
 
               <div className="mt-4">
-                <Button type="submit" _active={{bg:"blue.600"}} _hover={{bg:"blue.600"}} isLoading={isSubmitting} bg="blue.500" color="white" fontWeight="regular" className="w-full rounded-md">
+                <Button
+                  type="submit"
+                  _active={{ bg: "blue.600" }}
+                  _hover={{ bg: "blue.600" }}
+                  isLoading={isSubmitting}
+                  bg="blue.500"
+                  color="white"
+                  fontWeight="regular"
+                  className="w-full rounded-md"
+                >
                   Sign In
                 </Button>
               </div>
@@ -161,8 +227,11 @@ const SignIn = () => {
 
             <div className="flex items-center justify-center gap-1 mb-10">
               <Text className="text-sm">Don't have and account?</Text>
-              <Link to="/signup/option" className="text-sm font-semibold text-sky-600">
-                  Sign Up
+              <Link
+                to="/signup/option"
+                className="text-sm font-semibold text-sky-600"
+              >
+                Sign Up
               </Link>
             </div>
 

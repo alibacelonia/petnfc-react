@@ -128,9 +128,12 @@ export default function Navbar() {
                 }
                 else if (item.page === "order"){
                   return (
-                    <Link to={"/order-petnfc-qr-tag"} className={classnames} key={idx}>
+                    // <Link to={"/order-petnfc-qr-tag"} className={classnames} key={idx}>
+                    //   {linkText}
+                    // </Link>
+                    <a className={classnames} target="_blank" rel="noopener noreferrer" key={idx} href="https://www.ebay.com.au/itm/226019567113?mkcid=16&mkevt=1&mkrid=705-154756-20017-0&ssspo=bzlwlduzrgw&sssrc=2047675&ssuid=bzlwlduzrgw&widget_ver=artemis&media=COPY">
                       {linkText}
-                    </Link>
+                    </a>
                   );
                 }
                 else{
