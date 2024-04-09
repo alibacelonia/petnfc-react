@@ -88,7 +88,7 @@ export default function PetListItem({ data }: PetListItemProps) {
         </button>
         <button
           onClick={() => handleClick("home_pet_details", data)}
-          className="transition ease-in-out duration-300 grow px-4 py-2 bg-blue-500 rounded-md text-white text-sm hover:bg-blue-700"
+          className="transition ease-in-out duration-300 grow py-2 md:px-5 md:py-3 bg-blue-500 rounded-md text-white text-sm hover:bg-blue-700"
         >
           View Details
         </button>

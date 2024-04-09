@@ -35,7 +35,8 @@ import { axiosPrivate } from "../../../../../../api/axios";
 import { FiLoader } from "react-icons/fi";
 import { totp } from "otplib";
 import moment, { Moment } from "moment";
-import { changeUser } from "../../../../../../flux/user/action";
+import { changeUser, updateUser } from "../../../../../../flux/user/action";
+import { useSettings } from "../../../../../../hooks/useSettings";
 
 export type EmailInputs = {
   current_email: string;
@@ -167,14 +168,17 @@ const AccountSettingsPage = () => {
     });
   };
 
-  const resendOTP = () => {    
-    if(parseInt(timeRemaining.minutes) <= 0 && parseInt(timeRemaining.seconds) <= 0){
-      setIsSentOTP(false)
+  const resendOTP = () => {
+    if (
+      parseInt(timeRemaining.minutes) <= 0 &&
+      parseInt(timeRemaining.seconds) <= 0
+    ) {
+      setIsSentOTP(false);
       setIsSendingEmail(true);
       axiosPrivate
         .post(`/user/send_otp?email=${emailData.new_email}`)
         .then((response) => {
-          localStorage.setItem('new_email', emailData.new_email)
+          localStorage.setItem("new_email", emailData.new_email);
           setTargetDate(moment(response.data.date));
           setIsSendingEmail(false);
         })
@@ -197,19 +201,19 @@ const AccountSettingsPage = () => {
           setIsSendingEmail(false);
         });
     }
-    
-  }
-
+  };
 
   const resetOTP = () => {
-    axiosPrivate.get(`/user/reset_otp`).then((response) => {
-      setUserInfo(response.data)
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-    .finally(() => {});
-  }
+    axiosPrivate
+      .get(`/user/reset_otp`)
+      .then((response) => {
+        setUserInfo(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {});
+  };
 
   const checkEmail = () => {
     if (changeEmailStep == 0) {
@@ -222,8 +226,7 @@ const AccountSettingsPage = () => {
           message: "Incorrect email address",
         });
       }
-    } 
-    else if (changeEmailStep == 1) {
+    } else if (changeEmailStep == 1) {
       if (emailData.new_email == "") {
         setError("new_email", {
           type: "manual",
@@ -239,31 +242,30 @@ const AccountSettingsPage = () => {
           type: "manual",
           message: "This email is already the one you're using",
         });
-      
-      }else {
+      } else {
         axiosPrivate
           .post(`/user/check/email`, { email: emailData.new_email })
           .then((response) => {
-            if(isSentOTP){
+            if (isSentOTP) {
               setIsSendingEmail(false);
               setChangeEmailStep(2);
               setProgress(progress + 33);
-            }
-            else if (hasOTP && (parseInt(timeRemaining.minutes) > 0 || parseInt(timeRemaining.seconds) > 0)) {
+            } else if (
+              hasOTP &&
+              (parseInt(timeRemaining.minutes) > 0 ||
+                parseInt(timeRemaining.seconds) > 0)
+            ) {
               setTargetDate(moment(userInfo.otp_created_at));
               setIsSendingEmail(false);
               setChangeEmailStep(2);
               setProgress(progress + 33);
-            }
-             else {
-
+            } else {
               setIsSendingEmail(true);
               axiosPrivate
                 .post(`/user/send_otp?email=${emailData.new_email}`)
                 .then((response) => {
-                  
-                  localStorage.setItem('new_email', emailData.new_email)
-                  setIsSentOTP(true)
+                  localStorage.setItem("new_email", emailData.new_email);
+                  setIsSentOTP(true);
                   setTargetDate(moment(response.data.date));
                   setIsSendingEmail(false);
                   setChangeEmailStep(2);
@@ -285,7 +287,6 @@ const AccountSettingsPage = () => {
                   setProgress(0);
                 })
                 .finally(() => {
-
                   setIsSendingEmail(false);
                 });
             }
@@ -297,33 +298,30 @@ const AccountSettingsPage = () => {
             });
           });
       }
-    } 
-    else if (changeEmailStep == 2) {
+    } else if (changeEmailStep == 2) {
       axiosPrivate
         .post(`/user/verify_otp?otp=${emailData.otp}`)
         .then((response) => {
           if (response.data.isValid) {
             // setChangeEmailStep(changeEmailStep + 1);
             // setProgress(progress + 34);
-            axiosPrivate.post(`/user/update`, {email: emailData.new_email})
-            .then((response) => {
-
-              userDispatch(changeUser(response.data))
-              localStorage.setItem('pageData', JSON.stringify(response.data));
-              // handleReset();
-              // clearErrors();
-              setProgress(progress + 34);
-              setChangeEmailStep(changeEmailStep + 1);
-              setHasOTP(false);
-              setIsSentOTP(false)
-              localStorage.removeItem('new_email')
-            })
-            .catch((err) =>{
-              console.error(err);
-            })
-            .finally(()=>{
-
-            });
+            axiosPrivate
+              .post(`/user/update`, { email: emailData.new_email })
+              .then((response) => {
+                userDispatch(changeUser(response.data));
+                localStorage.setItem("pageData", JSON.stringify(response.data));
+                // handleReset();
+                // clearErrors();
+                setProgress(progress + 34);
+                setChangeEmailStep(changeEmailStep + 1);
+                setHasOTP(false);
+                setIsSentOTP(false);
+                localStorage.removeItem("new_email");
+              })
+              .catch((err) => {
+                console.error(err);
+              })
+              .finally(() => {});
           } else {
             setError("otp", {
               type: "manual",
@@ -345,6 +343,38 @@ const AccountSettingsPage = () => {
     } else {
     }
   };
+
+
+
+  const [settings, updateSettings] = useSettings();
+
+  const saveSettingsChanges = async () => {
+    axiosPrivate.post(`/user/update-settings`, settings)
+    .then((response) => {
+      if(response.data){
+        userDispatch(updateUser(response.data))
+      }
+    })
+    .catch((error) => { 
+      console.log(error); 
+    });
+  }
+
+  const handleToggleContactVisibility = () => {
+    const updatedSettings = { ...settings };
+    updatedSettings.account.privacy.contact.visible = !settings.account.privacy.contact.visible;
+    updateSettings(updatedSettings);
+    saveSettingsChanges()
+  };
+
+  const handleTogglePrivacySetting = (settingName: 'allergies' | 'medications' | 'vaccinations') => {
+    const updatedSettings = { ...settings };
+    // Toggle the specified privacy setting
+    updatedSettings.account.privacy.medical[settingName] = !updatedSettings.account.privacy.medical[settingName];
+    updateSettings(updatedSettings);
+    saveSettingsChanges()
+    
+};
 
   const CurrentEmailComponent = () => {
     return (
@@ -425,9 +455,17 @@ const AccountSettingsPage = () => {
             <span className="font-semibold">{emailData.new_email}</span>
           </p>
 
-          { 
+          {
             <>
-              <div className={`mt-6 mb-4 ${ (isNaN(parseInt(timeRemaining.minutes))) || (parseInt(timeRemaining.minutes) <= 0 && parseInt(timeRemaining.seconds) <= 1) ? "hidden" : "block"}`}>
+              <div
+                className={`mt-6 mb-4 ${
+                  isNaN(parseInt(timeRemaining.minutes)) ||
+                  (parseInt(timeRemaining.minutes) <= 0 &&
+                    parseInt(timeRemaining.seconds) <= 1)
+                    ? "hidden"
+                    : "block"
+                }`}
+              >
                 <p className="text-sm text-gray-400">Resend in </p>
                 <div className="flex flex-row justify-center items-center">
                   <p className="text-xl font-light text-gray-600">
@@ -435,7 +473,18 @@ const AccountSettingsPage = () => {
                   </p>
                 </div>
               </div>
-              <p onClick={resendOTP} className={`text-sm text-blue-500 mt-6 cursor-pointer ${ (isNaN(parseInt(timeRemaining.minutes))) ||  parseInt(timeRemaining.minutes) <= 0 && parseInt(timeRemaining.seconds) <= 0 ? "block" : "hidden"}`}>Resend Code</p>
+              <p
+                onClick={resendOTP}
+                className={`text-sm text-blue-500 mt-6 cursor-pointer ${
+                  isNaN(parseInt(timeRemaining.minutes)) ||
+                  (parseInt(timeRemaining.minutes) <= 0 &&
+                    parseInt(timeRemaining.seconds) <= 0)
+                    ? "block"
+                    : "hidden"
+                }`}
+              >
+                Resend Code
+              </p>
             </>
           }
         </div>
@@ -537,26 +586,31 @@ const AccountSettingsPage = () => {
 
   useEffect(() => {
     setUserInfo(userState.userInfo);
-    setTargetDate(moment(userState.userInfo.otp_created_at) );
-    
-    const rem = getTimeRemaining(moment(userState.userInfo.otp_created_at))
+    setTargetDate(moment(userState.userInfo.otp_created_at));
 
-    if(progress < 100 && changeEmailStep < 3) {
-      if( isNaN(parseInt(rem.minutes)) || (parseInt(rem.minutes) <= 0 && parseInt(rem.seconds) <= 0)) {
-        setProgress(0)
-        setChangeEmailStep(0)
+    const rem = getTimeRemaining(moment(userState.userInfo.otp_created_at));
+
+    if (progress < 100 && changeEmailStep < 3) {
+      if (
+        isNaN(parseInt(rem.minutes)) ||
+        (parseInt(rem.minutes) <= 0 && parseInt(rem.seconds) <= 0)
+      ) {
+        setProgress(0);
+        setChangeEmailStep(0);
         handleReset();
         clearErrors();
-      }
-      else{
-        const new_email = localStorage.getItem('new_email')
-        setChangeEmailStep(2)
-        setProgress(66)
-        setEmailData({current_email: userInfo.email, new_email: `${new_email}`, otp: emailData.otp})
+      } else {
+        const new_email = localStorage.getItem("new_email");
+        setChangeEmailStep(2);
+        setProgress(66);
+        setEmailData({
+          current_email: userInfo.email,
+          new_email: `${new_email}`,
+          otp: emailData.otp,
+        });
       }
     }
   }, [userState]);
-  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -587,14 +641,14 @@ const AccountSettingsPage = () => {
 
   return (
     <div className="bg-red-0 py-3 px-2">
-      <h1 className="text-xl font-bold text-gray-700">Account settings</h1>
+      <h1 className="text-xl font-bold text-gray-700">Account Settings</h1>
       <p className="text-sm text-gray-400">
         Change your email, phone, and other account settings
       </p>
-      <Divider className="my-4"></Divider>
+      {/* <Divider className="my-4"></Divider> */}
       <div className="grid grid-cols-12 mt-8">
         <div className="col-span-12 lg:col-span-6 bg-blue-1000">
-          <h1 className="text-gray-700 font-semibold text-lg">
+          <h1 className="text-gray-700 font-semibold text-base">
             Change Email Address
           </h1>
           <p className="text-gray-400 text-sm">
@@ -605,11 +659,11 @@ const AccountSettingsPage = () => {
           <div className="flex flex-col ">
             <div className="mb-2 flex md:flex-row flex-col justify-between">
               <div className="">
-                <h1 className="text-gray-700 font-semibold">Email Address</h1>
-                <p className=" my-1">{formatEmail(userInfo?.email)}</p>
+                <h1 className="text-gray-700 font-semibold text-base">Email Address</h1>
+                <p className=" my-1 text-sm">{formatEmail(userInfo?.email)}</p>
                 <div className="flex flex-row bg-sky-100 text-sky-500 px-3 py-1 rounded-full w-fit">
                   <HiBadgeCheck />
-                  <span className=" text-xs font-bold"> VERIFIED</span>
+                  <span className="text-xs font-bold"> VERIFIED</span>
                 </div>
               </div>
               <div className="flex justify-center items-center pr-2 mt-4 md:mt-0">
@@ -625,7 +679,103 @@ const AccountSettingsPage = () => {
         </div>
       </div>
 
-      <Divider className="py-3"></Divider>
+      <Divider className='my-4 mt-8'></Divider>
+      <h1 className="text-xl font-bold text-gray-700">Privacy Settings</h1>
+      <p className="text-sm text-gray-400">
+        Change your email, phone, and other account settings
+      </p>
+      {/* <Divider className='my-4'></Divider> */}
+        <div className="flex justify-between items-center gap-4 mt-6">
+            <div className="">
+              <h1 className="text-gray-700 font-semibold text-base">
+              Contact Information
+              </h1>
+              <p className="text-sm text-gray-400">
+              This includes contact profiles, such as phone numbers and emails. It's recommended to keep this setting turned on.
+              </p>
+            </div>
+            <div className="">
+              <FormControl display='flex' height="100%" justifyContent="end" alignItems='center'>
+                  <Switch id='news_and_updates' isChecked={settings.account.privacy.contact.visible} size="lg" onChange={handleToggleContactVisibility}/>
+              </FormControl>
+            </div>
+        </div>
+
+
+      {/* <Divider className='my-4'></Divider> */}
+        <div className="grid grid-cols-12 gap-4 mt-6">
+            <div className="col-span-12 lg:col-span-6 bg-blue-1000">
+            <h1 className="text-gray-700 font-semibold text-base">
+            Medical Information
+            </h1>
+            <p className="text-gray-400 text-sm">
+            This includes all health information of your pet.
+            </p>
+            </div>
+            <div className="col-span-12 lg:col-span-6 bg-red-1000 mt-2 lg:mt-0">
+                    <div className="flex flex-col ">
+                        <div className="mb-4">
+                            <FormControl display='flex' justifyContent="space-between" alignItems='center' gap={4}>
+                                <div>
+                                <h1 className='text-gray-700 font-semibold'>
+                                    Allergies
+                                </h1>
+                                <p className='text-sm text-gray-400'>
+                                Toggle on to share your pet's allergy information with others.
+                                </p>
+                                </div>
+                                <Switch id='pet_monitoring' size="lg" isChecked={settings.account.privacy.medical.allergies} onChange={()=>{
+                                  handleTogglePrivacySetting('allergies')
+                                }}/>
+                            </FormControl>
+                        </div>
+                        <div className="mb-4">
+                            <FormControl display='flex' justifyContent="space-between" alignItems='center' gap={4}>
+                                <div>
+                                    <h1 className='text-gray-700 font-semibold'>
+                                        Medications
+                                    </h1>
+                                    <p className='text-sm text-gray-400'>
+                                    Toggle on to share updates about your pet's medication status.
+                                    </p>
+                                </div>
+                                <Switch id='news_and_updates' size="lg" isChecked={settings.account.privacy.medical.medications} onChange={()=>{
+                                  handleTogglePrivacySetting('medications')
+                                }}/>
+                            </FormControl>
+                        </div>
+
+                        <div className="mb-4">
+                            <FormControl display='flex' justifyContent="space-between" alignItems='center' gap={4}>
+                                <div>
+                                    <h1 className='text-gray-700 font-semibold'>
+                                        Vaccinations
+                                    </h1>
+                                    <p className='text-sm text-gray-400'>
+                                    Toggle on to share your pet's vaccination records with others.
+                                      </p>
+                                </div>
+                                <Switch id='news_and_updates' size="lg" isChecked={settings.account.privacy.medical.vaccinations} onChange={()=>{
+                                  handleTogglePrivacySetting('vaccinations')
+                                }}/>
+                            </FormControl>
+                        </div>
+                        {/* <div className="mb-4">
+                            <FormControl display='flex' justifyContent="space-between" alignItems='center' gap={4}>
+                                <div>
+                                    <h1 className='text-gray-700 font-semibold'>
+                                        User Research
+                                    </h1>
+                                    <p className='text-sm text-gray-400'>Get involved in our beta testing program or participate in paid product user research.</p>
+                                </div>
+                                <Switch id='email-alerts' size="lg"/>
+                            </FormControl>
+                        </div> */}
+                    </div>
+            </div>
+        </div>
+
+      {/* <Divider className="py-3"></Divider>
 
       <div className="grid grid-cols-12 mt-8">
         <div className="col-span-12 lg:col-span-6 bg-blue-1000">
@@ -659,7 +809,7 @@ const AccountSettingsPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <Modal
         closeOnOverlayClick={false}
@@ -678,8 +828,10 @@ const AccountSettingsPage = () => {
           <ModalFooter>
             <Button
               isDisabled={isSendingEmail}
-              display={`${changeEmailStep == 0 || changeEmailStep == 2 ? "block" : "none"}`}
-              onClick={()=>{
+              display={`${
+                changeEmailStep == 0 || changeEmailStep == 2 ? "block" : "none"
+              }`}
+              onClick={() => {
                 handleReset();
                 clearErrors();
                 setChangeEmailStep(0);
@@ -715,7 +867,6 @@ const AccountSettingsPage = () => {
               ml={3}
             >
               {`${changeEmailStep == 2 ? "Submit" : "Next"}`}
-              
             </Button>
             <Button
               display={`${changeEmailStep == 3 ? "block" : "none"}`}

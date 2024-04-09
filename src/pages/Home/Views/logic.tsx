@@ -12,6 +12,7 @@ import { AxiosError } from "axios";
 import { useToast } from "@chakra-ui/react";
 import { UserInfo } from "../../../flux/user/types";
 import CryptoJS from "crypto-js";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 function decryptData(base64Key: any, encryptedData: any) {
   const key = CryptoJS.enc.Base64.parse(base64Key);
@@ -26,7 +27,12 @@ function decryptData(base64Key: any, encryptedData: any) {
 };
 
 
-
+interface Notification {
+  id: string;
+  message: string;
+  created_at: string; 
+  is_read: boolean; 
+}
 export const useLogic = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,7 +40,7 @@ export const useLogic = () => {
   const { petState, petDispatch } = React.useContext(PetInfoContext);
   const { userState, userDispatch } = React.useContext(UserInfoContext);
   const [currentPage, setPage] = useState("home");
-  const [user, setUser] = useState<UserInfo | null>(null);
+  const [user, setUser] = useState<UserInfo | null>(userState.userInfo);
 
   const [isLoading, setIsLoading] = useState(true);
   const [ready, setReady] = useState(false);
@@ -42,8 +48,6 @@ export const useLogic = () => {
   const toast = useToast();
   const petStateHistory = petState.history;
   const userStateHistory = userState.history;
-  
-  
 
   useEffect(() => {
     // Batching localStorage calls
@@ -88,7 +92,6 @@ export const useLogic = () => {
   }, [petState]);
 
   useEffect(() => {
-    
     if(userStateHistory.length > 0) {
       const type = userStateHistory[userStateHistory.length - 1].type;
       if (type == "UPDATE_PET") {
@@ -131,7 +134,7 @@ export const useLogic = () => {
 
         const decryptedText = decryptData(response1?.data.key,  response1?.data.data);
         const userObj = JSON.parse(decryptedText)
-        console.log(userObj)
+        // console.log("userdata: ",userObj)
 
         userDispatch(fetchUserData(userObj));
         petDispatch(fetchPetData(response2?.data?.pets));
@@ -170,10 +173,15 @@ export const useLogic = () => {
                   date_of_birth_year: 0,
                   date_of_birth_month: 0,
                   weight: 0,
+                  no_of_scans: 0,
                   behavior: "",
                   description: "",
                   created_at: "",
                   updated_at: "",
+
+                  allergies: "",
+                  medications: "",
+                  vaccines: "",
                 };
                 pageDispatch(changePage("home_register_pet", data))
               }

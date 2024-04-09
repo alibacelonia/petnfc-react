@@ -1,3 +1,37 @@
+interface AccountSettings {
+    emailAddress: string;
+    privacy: {
+        contact: {
+            visible: boolean;
+        };
+        medical: {
+            allergies: boolean;
+            medications: boolean;
+            vaccinations: boolean;
+        };
+    };
+}
+
+interface EmailNotificationSettings {
+    petMonitoring: boolean;
+    newAndUpdates: boolean;
+}
+
+interface SecuritySettings {
+    twoFactorEnabled: boolean;
+    type: string;
+    recipient: string;
+}
+
+interface AppSettings {
+    account: AccountSettings;
+    notification: {
+        email: EmailNotificationSettings;
+    };
+    security: SecuritySettings;
+}
+
+
 export type UserInfo = {
     id: string;
     firstname: string;
@@ -26,6 +60,7 @@ export type UserInfo = {
     otp_created_at: string;
 
     status: string;
+    settings: null | AppSettings;
 }
 
 
@@ -36,7 +71,8 @@ export type UserInfoContextState = {
 
 export enum UserActionType {
     FETCH_DATA = "FETCH_DATA",
-    UPDATE_PET = "UPDATE_PET"
+    UPDATE_PET = "UPDATE_PET",
+    UPDATE_USER = "UPDATE_USER"
 }
 
 export type UserActionPayload = {

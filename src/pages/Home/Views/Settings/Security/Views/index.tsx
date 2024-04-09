@@ -353,9 +353,9 @@ const SecuritySettingsPage = () => {
                   <span className=" text-xs font-bold"> VERIFIED</span>
                 </div>
               </div>
-              <div className="flex justify-center items-center pr-2">
+              {/* <div className="flex justify-center items-center pr-2">
                 <Switch colorScheme="blue" size="lg" />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

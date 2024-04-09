@@ -227,10 +227,14 @@ const PetAddPage = () => {
     date_of_birth_year: 0,
     date_of_birth_month: 0,
     weight: 0,
+    no_of_scans: 0,
     behavior: "",
     description: "",
     created_at: "",
     updated_at: "",
+    allergies: "",
+    medications: "",
+    vaccines: "",
   });
 
   useEffect(() => {
@@ -288,7 +292,7 @@ const PetAddPage = () => {
 
       if (key === "behavior") {
         setSelectedBehaviour(newData);
-        console.info("newData", newData)
+        // console.info("newData", newData)
         
         let behaviors = (newData as BehaviorOption[]).map(item => item.value).join(",");
         setFormData((prevData) => ({
@@ -343,7 +347,7 @@ const PetAddPage = () => {
 
   const onSubmit: SubmitHandler<Inputs> = async (inputs: Inputs) => {
     // e.preventDefault();
-    console.info("formdata: ", formdata) 
+    // console.info("formdata: ", formdata) 
     // console.log(pet_birth_year);
 
     // const changes: PetInfo = Object.keys(formdata)
@@ -462,12 +466,12 @@ const PetAddPage = () => {
         setIsScanning(true);
         if (validateQR(decoded)) {
             const decodedID = decoded.replace("https://secure-petz.info/", "");
-            console.info("decoded: " + decodedID);
+            // console.info("decoded: " + decodedID);
             axiosPrivate
                 .get(`/pet/${decodedID}`)
                 .then((response) => {
                     const data = response.data;
-                    console.info("HAHAHAKDOG: ",data)
+                    // console.info("HAHAHAKDOG: ",data)
                     if (data.owner) {
                         toast({
                             position: "top",
@@ -523,7 +527,7 @@ const PetAddPage = () => {
 
 
   useEffect(() => {
-    console.info("Is Scanning: ", isScanning);
+    // console.info("Is Scanning: ", isScanning);
   }, [isScanning]);
 
   const StepOne = () => {

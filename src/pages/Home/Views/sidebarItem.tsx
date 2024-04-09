@@ -1,7 +1,8 @@
-import { Box, Flex, FlexProps, Icon } from "@chakra-ui/react";
-import React from "react";
+import { Badge, Box, Flex, FlexProps, Icon } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { PageInfoContext } from "../../../flux/navigation/store";
+import { axiosPrivate } from "../../../api/axios";
 
 interface NavItemProps extends FlexProps {
   icon: IconType;
@@ -14,6 +15,45 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
   const {pageState} = React.useContext(PageInfoContext)
 
   const currentPage = pageState.selectedPage
+
+  const [isSeenNotification, setIsSeenNotification] = useState(false);
+
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0); // Example state variable
+
+
+  const getUnreadNotificationCount = () => {
+    axiosPrivate.get(`/pet/unread/notifications/count`)
+    .then((response) => {
+      setUnreadNotifCount(response.data.count)  
+     })
+    .catch((error) => {console.error(error)});
+  };
+
+  const readNotifications = () => {
+    axiosPrivate.get(`/pet/notifications/read`)
+    .then((response) => {
+      // console.log(response.data)
+     })
+    .catch((error) => {console.error(error)});
+  };
+
+  // useEffect(() => {
+  //   const pingInterval = setInterval(() => {
+  //     getUnreadNotificationCount();
+
+
+  //   }, 5000); // Ping interval in milliseconds
+
+  //   return () => {
+  //     clearInterval(pingInterval);
+  //   };
+  // }, [unreadNotifCount]);
+
+  useEffect(() => {
+    if(currentPage === "notifications" && unreadNotifCount > 0) {
+      readNotifications();
+    }
+  }, [currentPage]);
 
   return (
     <Box
@@ -53,7 +93,8 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
             as={icon}
           />
         )}
-        {children}
+        <h1 className="grow">{children}</h1>
+        {children === "Notifications" && unreadNotifCount > 0 && currentPage != "notifications" ? <Badge variant="solid" borderRadius={100} colorScheme='red' padding={1}></Badge> : ""}
       </Flex>
     </Box>
   );

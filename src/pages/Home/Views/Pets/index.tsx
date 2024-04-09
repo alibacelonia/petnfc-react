@@ -5,6 +5,7 @@ import { PetInfoContext } from "../../../../flux/pets/store";
 import { PetInfo } from "../../../../flux/pets/types";
 import { PageInfoContext } from "../../../../flux/navigation/store";
 import { changePage } from "../../../../flux/navigation/action";
+import { Button } from "@chakra-ui/react";
 
 const noPets = () => {
   return (
@@ -25,7 +26,7 @@ const PetsPage = () => {
 
   useEffect(() => {
     setPets(petState.petInfos)
-  }, [petInfos]);
+  }, [petState]);
 
   return (
     <div className="relative ml-0 md:ml-60 bg-yello-200 py-4 px-4 md:px-10 z-10">
@@ -39,6 +40,18 @@ const PetsPage = () => {
           >
             <FiPlus size={16} className="inline" /> Register Pet
           </button>
+          {/* <Button
+              bg="blue.500"
+              color="white"
+              fontSize="xs"
+              rounded="sm"
+              _hover={{ bg: "blue.600" }}
+              onClick={() => pageDispatch(changePage("home_register_pet"))}
+              //   isDisabled={isDownloadingAll}
+                // onClick={onOpenModal}
+            >
+              <FiPlus size={16} className="inline mr-1" /> Register Pet
+            </Button> */}
         </div>
         {pets.length > 0 ? <PetCardList data={pets} /> : noPets()}
     </div>

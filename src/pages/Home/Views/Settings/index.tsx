@@ -13,6 +13,7 @@ import NotificationSettingsPage from "./Notification/Views";
 import SecuritySettingsPage from "./Security/Views";
 import { UserInfoContext } from "../../../../flux/user/store";
 import { UserInfo } from "../../../../flux/user/types";
+import { useSettings } from "../../../../hooks/useSettings";
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
@@ -22,19 +23,25 @@ const SettingsPage = () => {
   let [categories] = useState({
     Account: {
       id: 1,
-      content: <AccountSettingsPage />
+      content: <AccountSettingsPage />,
     },
 
     Notification: {
       id: 2,
-      content: <NotificationSettingsPage />
+      content: <NotificationSettingsPage />,
     },
-    "Security": {
+    Security: {
       id: 3,
-      content: <SecuritySettingsPage />
-    }
+      content: <SecuritySettingsPage />,
+    },
   });
 
+  // const { userState, userDispatch } = useContext(UserInfoContext);
+
+  // const [settings, updateSettings] = useSettings();
+  // const [userInfo, setUserInfo] = useState<UserInfo>(userState.userInfo);
+
+  
 
   return (
     <>
@@ -71,10 +78,7 @@ const SettingsPage = () => {
                 {Object.values(categories).map((element) => (
                   <Tab.Panel
                     key={element.id}
-                    className={classNames(
-                      "rounded-xl bg-white ",
-                      ""
-                    )}
+                    className={classNames("rounded-xl bg-white ", "")}
                   >
                     {element.content}
                   </Tab.Panel>

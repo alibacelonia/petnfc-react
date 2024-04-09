@@ -12,8 +12,10 @@ import ProfilePage from "./Profile";
 import { useLogic } from "./logic";
 
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import ProfileEditPage from "./Profile/ProfileEdit";
+import ScanHistoryPage from "./ScanHistory";
+import NotificationPage from "./Notification";
 
 export function useIsVisible(ref: any) {
   const [isIntersecting, setIntersecting] = useState(false);
@@ -53,8 +55,10 @@ const HomePage = () => {
         return <ProfilePage />;
       case "profile_edit":
         return <ProfileEditPage />;
-      // case "feedback":
-      //   return <FeedbackPage />;
+      case "scan_history":
+        return <ScanHistoryPage />;
+      case "notifications":
+        return <NotificationPage />;
       case "settings":
         return <SettingsPage />;
       default:
@@ -62,13 +66,16 @@ const HomePage = () => {
     }
   };
 
+
+  
   return (
-    <section 
-    ref={ref1}
-    id="whybuyourproduct"
-    className={`transition-opacity ease-in duration-300 ${
-      isVisible1 ? "opacity-100" : "opacity-0"
-    } overflow-hidden`}>
+    <section
+      ref={ref1}
+      id="whybuyourproduct"
+      className={`transition-opacity ease-in duration-300 ${
+        isVisible1 ? "opacity-100" : "opacity-0"
+      } overflow-hidden`}
+    >
       <div className="min-h-screen max-h-max bg-gray-100">
         <SidebarContent
           onClose={onClose}
@@ -90,7 +97,7 @@ const HomePage = () => {
         <MobileNav onOpen={onOpen} />
         <div className="relative pt-24">{renderPage()}</div>
       </div>
-    <ToastContainer />
+      <ToastContainer />
     </section>
   );
 };

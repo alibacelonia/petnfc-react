@@ -13,6 +13,10 @@ export type PetInfo = {
     date_of_birth_month: number;
     weight: number;
     behavior: string;
+    allergies: string;
+    medications: string;
+    vaccines: string;
+    no_of_scans: number;
     description: string;
     created_at: string;
     updated_at: string;

@@ -22,3 +22,4 @@ export type LocationData = {
   IPv4: string;
   state: string | null;
 };
+

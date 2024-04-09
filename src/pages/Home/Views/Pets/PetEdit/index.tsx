@@ -35,6 +35,8 @@ import { FiChevronLeft } from "react-icons/fi";
 import { PetInfoContext } from "../../../../../flux/pets/store";
 import { changePet } from "../../../../../flux/pets/action";
 
+
+
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 interface MyObject {
   [key: string]: any;
@@ -385,8 +387,12 @@ const PetEditPage = () => {
             console.error(error);
           });
       } else {
-        axiosPrivate
-          .put(`/pet/${petInfo.unique_id}/update`, changes)
+        console.log("Changes: ",changes);
+        axios
+          .put(`/pet/${petInfo.unique_id}/update`, changes, {
+            headers: { "Content-Type": "application/json"},
+            withCredentials: true,
+          })
           .then((response) => {
             petDispatch(changePet(response.data));
             pageDispatch(changePage("home_pet_details", response.data));

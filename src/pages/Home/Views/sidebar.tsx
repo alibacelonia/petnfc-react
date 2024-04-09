@@ -15,6 +15,7 @@ import {
   FiTrendingUp,
   FiUser
 } from "react-icons/fi";
+import { BsQrCodeScan } from "react-icons/bs";
 import { IconType } from "react-icons";
 import NavItem from "./sidebarItem";
 import { Dispatch, SetStateAction } from "react";
@@ -22,7 +23,7 @@ import { PageInfoContext } from "../../../flux/navigation/store";
 import React from "react";
 import { changePage } from "../../../flux/navigation/action";
 import { UserInfoContext } from "../../../flux/user/store";
-
+import { FaRegBell } from "react-icons/fa6";
 interface SidebarProps extends BoxProps {
   onClose: () => void;
 }
@@ -36,7 +37,8 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome },
   { name: "Profile", icon: FiUser },
-  // { name: "Feedback", icon: FiMessageSquare },
+  // { name: "Scan History", icon: BsQrCodeScan },
+  { name: "Notifications", icon: FaRegBell },
   { name: "Settings", icon: FiSettings },
 ];
 
@@ -74,7 +76,7 @@ const handleClick = (page: string) => {
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link, idx) => (
-        <NavItem key={idx} icon={link.icon} onClick={()=>{onClose(); handleClick(link.name.toLowerCase())}}>
+        <NavItem key={idx} icon={link.icon} onClick={()=>{onClose(); handleClick((link.name.split(" ").join("_")).toLowerCase())}}>
           {link.name}
         </NavItem>
       ))}

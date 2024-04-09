@@ -311,7 +311,28 @@ const AdminQRPage = () => {
   };
 
   const downloadSingle = async (data: PetInfo) => {
-    await download([data]);
+    await axios
+    .post(`/pet/download-qr-image`, JSON.stringify(data), {
+      headers: {
+        "Content-Type": "application/json",
+        // Accept: 'image/png', // Indicate that you expect a ZIP file in the response
+      },
+      withCredentials: true,
+      responseType: "arraybuffer", // Indicate that the response should be treated as binary data
+    })
+    .then((response) => {
+      // console.info("response: ", response);
+      const blob = new Blob([response.data], { type: 'image/png' });
+
+      // Create a link and trigger download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download =  `${data.name || data.unique_id}_qrcode.png`;
+      link.click();
+    })
+    .catch((err) => {
+      console.error(err);
+    });
   };
 
   const downloadSelected = async () => {

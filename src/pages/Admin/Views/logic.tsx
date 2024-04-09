@@ -174,10 +174,14 @@ export const useLogic = () => {
                   date_of_birth_year: 0,
                   date_of_birth_month: 0,
                   weight: 0,
+                  no_of_scans: 0,
                   behavior: "",
                   description: "",
                   created_at: "",
                   updated_at: "",
+                  allergies: "",
+                  medications: "",
+                  vaccines: "",
                 };
                 pageDispatch(changePage("home_register_pet", data))
               }

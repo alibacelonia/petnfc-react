@@ -90,6 +90,32 @@ const AdminQRDetails = () => {
   const [petInfo, setPetInfo] = useState<PetInfo>(pd);
   const [owner, setOwner] = useState<UserInfo | null>(null);
 
+  const download = async (data: PetInfo) => {
+    // console.info("to be downloaded: ", data);
+    await axios
+      .post(`/pet/download-qr-image`, JSON.stringify(data), {
+        headers: {
+          "Content-Type": "application/json",
+          // Accept: 'image/png', // Indicate that you expect a ZIP file in the response
+        },
+        withCredentials: true,
+        responseType: "arraybuffer", // Indicate that the response should be treated as binary data
+      })
+      .then((response) => {
+        // console.info("response: ", response);
+        const blob = new Blob([response.data], { type: 'image/png' });
+
+        // Create a link and trigger download
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download =  `${petInfo.name}_qrcode.png`;
+        link.click();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   const getOwnerDetails = async () => {
     await axiosPrivate
       .get(`/pet/owner/${petInfo.owner_id}/details`)
@@ -179,13 +205,38 @@ const AdminQRDetails = () => {
               <h1 className="flex items-center justify-start lowercase text-gray-700 gap-2 truncate w-full"><HiLink size={20}/>
                 <p className=" text-blue-500 cursor-pointer">{`secure-petz.info/${petInfo.unique_id}`}</p>
               </h1>
-              <h1 className="flex items-center justify-start lowercase text-gray-700 gap-2"><RiQrScan2Line size={20}/>{"65 Scans"}</h1>
-              <h1 className="flex items-center justify-start lowercase text-gray-700 ">
-                <Button
-                borderRadius={0}
-                >
-                    Download
-                </Button>
+              <h1 className="flex items-center justify-start lowercase text-gray-700 gap-2"><RiQrScan2Line size={20}/>{petInfo.no_of_scans || 0} scan(s)</h1>
+              <h1 className="flex items-center justify-start lowercase text-gray-700 gap-2">
+              <Button
+                variant='outline'
+                bg="white"
+                color="blue.500"
+                
+                // size="sm"
+                // fontSize="xs"
+                rounded="sm"
+                _hover={{ bg: "blue.500", color: "white" }}
+                // isDisabled={isDownloadingAll}
+                onClick={() => {
+                  // download(petInfo);
+                }}
+              >
+                View Scan History
+              </Button>
+              <Button
+                bg="blue.500"
+                color="white"
+                // size="sm"
+                // fontSize="xs"
+                rounded="sm"
+                _hover={{ bg: "blue.600" }}
+                // isDisabled={isDownloadingAll}
+                onClick={() => {
+                  download(petInfo);
+                }}
+              >
+                Download
+              </Button>
               </h1>
             </div>
           </div>

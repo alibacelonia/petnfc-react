@@ -16,3 +16,12 @@ export const changeUser = (userInfo: UserInfo): UserAction => {
         }
     }
 }
+
+export const updateUser = (userInfo: UserInfo): UserAction => {
+    return {
+        type: UserActionType.UPDATE_USER,
+        payload: {
+            targetUserInfo: userInfo
+        }
+    }
+}
